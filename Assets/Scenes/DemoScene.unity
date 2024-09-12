@@ -973,7 +973,7 @@ Camera:
   far clip plane: 1000
   field of view: 50
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3774,6 +3774,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4157777932318932009, guid: 59347f16d20f1d145b59c343fc2d644e,
+        type: 3}
+      propertyPath: sneakSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5383339205601692152, guid: 59347f16d20f1d145b59c343fc2d644e,
         type: 3}
       propertyPath: m_Name
@@ -3899,6 +3904,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
         type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_ActionId
+      value: 47a3e1da-c70a-4de2-8c92-3c3ba931c58d
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_ActionName
+      value: Gameplay/Sneak[/Keyboard/leftShift]
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 224721394}
@@ -3907,6 +3937,31 @@ PrefabInstance:
       propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 224721394}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 224721394}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Sneak
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114810446710012849, guid: 40ba813dbfbe9d64c892f0e183b0de83,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float smoothTime = 0.05f;
     private float currentVelocity;
     [SerializeField] private float speed;
+    [SerializeField] private float sneakSpeed;
+    private float previousSpeed;
 
     // == Player Jump Variables ==
     private float gravity = -9.81f;
@@ -73,6 +75,21 @@ public class PlayerController : MonoBehaviour
         if (!IsGrounded()) return;
 
         velocity += jumpPower;
+    }
+
+    public void Sneak(InputAction.CallbackContext context)
+    {
+        if( context.started)
+        {
+            previousSpeed = speed;
+            speed = sneakSpeed;
+            gameObject.GetComponent<Transform>().localScale = new Vector3(1.0f, 0.75f, 1.0f);
+        }
+        else if (context.canceled)
+        {
+            speed = previousSpeed;
+            gameObject.GetComponent<Transform>().localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        }
     }
 
     private bool IsGrounded()
