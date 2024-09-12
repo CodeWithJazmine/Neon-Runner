@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
+    // == Player Movement Variables ==
     private Vector2 input;
     private CharacterController characterController;
     private Vector3 direction;
@@ -15,10 +15,10 @@ public class PlayerController : MonoBehaviour
     private float currentVelocity;
     [SerializeField] private float speed;
 
+    // == Player Jump Variables ==
     private float gravity = -9.81f;
     [SerializeField] private float gravityMultiplier = 3.0f;
     private float velocity;
-
     [SerializeField] private float jumpPower;
 
     private void Awake()
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyGravity()
     {
-        if (isGrounded() && velocity < 0)
+        if (IsGrounded() && velocity < 0)
         {
             velocity = -1f;
         }
@@ -70,12 +70,12 @@ public class PlayerController : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         if (!context.started) return;
-        if (!isGrounded()) return;
+        if (!IsGrounded()) return;
 
         velocity += jumpPower;
     }
 
-    private bool isGrounded()
+    private bool IsGrounded()
     {
         return characterController.isGrounded;
     }
