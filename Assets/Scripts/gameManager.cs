@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [Header("Game Variables")]
-    public bool playerSeen = false;
+    //public bool playerSeen = false;
 
     [Header("UI Objects")]
     public GameObject LoseOverlay;
