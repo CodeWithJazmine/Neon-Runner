@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    // 
-    private bool playerDetected = false;
 
-    private Coroutine detectedOverlayCoroutine;
+    //private Coroutine detectedOverlayCoroutine;
     private Coroutine detectingPlayerCoroutine;
+    private Coroutine flashingLightCoroutine;
 
     private void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Player"))
@@ -16,9 +15,9 @@ public class EnemyAI : MonoBehaviour
             Debug.Log("Player entered enemy sights");
             GameManager.instance.playerSeen = true;
 
-            if (detectedOverlayCoroutine == null)
+            if (flashingLightCoroutine == null)
             {
-                detectedOverlayCoroutine = StartCoroutine(GameManager.instance.DetectedOverlayFlash());
+                flashingLightCoroutine = StartCoroutine(FlashingLight());
             }
 
             if (detectingPlayerCoroutine == null)
@@ -34,11 +33,11 @@ public class EnemyAI : MonoBehaviour
             Debug.Log("Player left enemy sights");
             GameManager.instance.playerSeen = false;
 
-            if (detectedOverlayCoroutine != null)
+            if (flashingLightCoroutine != null)
             {
-                StopCoroutine(detectedOverlayCoroutine);
-                detectedOverlayCoroutine = null;
-                GameManager.instance.DetectedOverlay.SetActive(false); // Make sure the overlay is hidden if it was active
+                StopCoroutine(flashingLightCoroutine);
+                flashingLightCoroutine = null;
+                this.GetComponentInChildren<Light>().intensity = 4.0f; // Make sure the light is off if it was on
             }
 
             if (detectingPlayerCoroutine != null)
@@ -49,10 +48,19 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    IEnumerator FlashingLight()
+    {
+        while (true)
+        { 
+            this.GetComponentInChildren<Light>().intensity = 20.0f;
+            yield return new WaitForSeconds(0.5f);
+            this.GetComponentInChildren<Light>().intensity = 4.0f;
+            yield return new WaitForSeconds(0.5f);
+        }    
+    }
     IEnumerator DetectingPlayer(float countdown) {
 
         yield return new WaitForSeconds(countdown);
-        playerDetected = true;
         GameManager.instance.YouLose();
     }
 

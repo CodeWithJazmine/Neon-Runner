@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     public bool playerSeen = false;
 
     [Header("UI Objects")]
-    public GameObject DetectedOverlay;
     public GameObject LoseOverlay;
 
     private void Awake() {
@@ -25,17 +24,6 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(this);
 
-    }
-
-    public IEnumerator DetectedOverlayFlash() {
-
-        while (playerSeen)
-        {
-            DetectedOverlay.SetActive(true);
-            yield return new WaitForSeconds(0.5f);
-            DetectedOverlay.SetActive(false);
-            yield return new WaitForSeconds(0.5f);
-        }
     }
 
     public void YouLose()
