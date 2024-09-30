@@ -2,51 +2,50 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class EnemyDrone : MonoBehaviour, IChasePlayer
 {
-    
     private Coroutine detectingPlayerCoroutine;
-    private Coroutine flashingLightCoroutine;
+    private Coroutine flashingConeCoroutine;
+    private Transform playerTransform;
+    private FieldOfViewDetector fieldOfView;
 
-    private void OnTriggerEnter(Collider other) {
-        if (other.CompareTag("Player"))
-        {
-            ChasePlayer();
-        }
-    }
+    [Header("Variables")]
+    [SerializeField]private float detectionTime = 3.0f;
 
-    private void OnTriggerExit(Collider other) {
-        if (other.CompareTag("Player"))
+    void Start()
+    {
+        // Get the FieldOfViewDetector component and subscribe to its events
+        fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
+        if (fieldOfView != null)
         {
-            StopChasingPlayer();
+            fieldOfView.OnPlayerEnterFOV += ChasePlayer;
+            fieldOfView.OnPlayerExitFOV += StopChasingPlayer;
         }
     }
 
     // Implementing the IChasePlayer interface
     public void ChasePlayer()
     {
-        //GameManager.instance.playerSeen = true;
-
-        if (flashingLightCoroutine == null)
+        if (flashingConeCoroutine == null)
         {
-            flashingLightCoroutine = StartCoroutine(FlashingLight());
+            flashingConeCoroutine = StartCoroutine(FlashingCone());
         }
 
         if (detectingPlayerCoroutine == null)
         {
-            detectingPlayerCoroutine = StartCoroutine(DetectingPlayer(3.0f));
+            detectingPlayerCoroutine = StartCoroutine(DetectingPlayer(detectionTime));
         }
     }
 
     public void StopChasingPlayer()
     {
-       // GameManager.instance.playerSeen = false;
 
-        if (flashingLightCoroutine != null)
+        if (flashingConeCoroutine != null)
         {
-            StopCoroutine(flashingLightCoroutine);
-            flashingLightCoroutine = null;
-            this.GetComponentInChildren<Light>().intensity = 4.0f; // Make sure the light is off if it was on
+            StopCoroutine(flashingConeCoroutine);
+            flashingConeCoroutine = null;
+            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.0f, 0.0f, 0.0f); // Make sure the cone returns to orignal color
         }
 
         if (detectingPlayerCoroutine != null)
@@ -57,19 +56,21 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
     }
 
     // Custom Drone Coroutines
-    IEnumerator FlashingLight()
+    IEnumerator FlashingCone()
     {
         while (true)
         {
-            this.GetComponentInChildren<Light>().intensity = 20.0f;
+            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.5f,0.0f,0.0f,0.5f);
             yield return new WaitForSeconds(0.5f);
-            this.GetComponentInChildren<Light>().intensity = 4.0f;
+            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
             yield return new WaitForSeconds(0.5f);
         }
     }
+
     IEnumerator DetectingPlayer(float countdown)
     {
         yield return new WaitForSeconds(countdown);
         GameManager.instance.YouLose();
     }
+
 }
