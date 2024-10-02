@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,8 +11,11 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
     private Transform playerTransform;
     private FieldOfViewDetector fieldOfView;
 
-    [Header("Variables")]
-    [SerializeField]private float detectionTime = 3.0f;
+    [Header("Drone Variables")]
+    [SerializeField] private float detectionTime = 3.0f;
+    [SerializeField] private float oscillationSpeed = 0.35f;
+    private Vector3 oscillationStart;
+    private Vector3 oscillationEnd;
 
     void Start()
     {
@@ -22,6 +26,20 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
             fieldOfView.OnPlayerEnterFOV += ChasePlayer;
             fieldOfView.OnPlayerExitFOV += StopChasingPlayer;
         }
+
+        oscillationStart = transform.eulerAngles + new Vector3(0f, fieldOfView.viewAngle / 2.0f, 0f);
+        oscillationEnd = transform.eulerAngles + new Vector3(0f, -(fieldOfView.viewAngle / 2.0f), 0f);
+    }
+
+    void Update()
+    {
+        Oscillate();
+    }
+
+    private void Oscillate()
+    {
+        float oscillation = Mathf.PingPong(Time.time * oscillationSpeed, 1);
+        transform.eulerAngles = Vector3.Lerp(oscillationStart, oscillationEnd, oscillation);
     }
 
     // Implementing the IChasePlayer interface

@@ -8,7 +8,7 @@ using UnityEngine.Events;
 public class FieldOfViewDetector: MonoBehaviour
 {
     [Header("Variables")]
-    [SerializeField][Range(0, 360)] private float viewAngle = 90f;  // The angle of the cone
+    [SerializeField][Range(0, 360)] public float viewAngle = 90f;  // The angle of the cone
     [SerializeField] private float viewDistance = 5f;                // The distance of the FOV\
 
     public event Action OnPlayerEnterFOV;
