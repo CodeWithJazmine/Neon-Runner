@@ -239,6 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionTime: 3
+  oscillationSpeed: 0.35
 --- !u!1001 &8455726446307794436
 PrefabInstance:
   m_ObjectHideFlags: 0
