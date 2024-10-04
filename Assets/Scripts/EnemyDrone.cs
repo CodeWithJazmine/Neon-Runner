@@ -8,8 +8,11 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
 {
     private Coroutine detectingPlayerCoroutine;
     private Coroutine flashingConeCoroutine;
-    private Transform playerTransform;
     private FieldOfViewDetector fieldOfView;
+
+    //Mesh renderer colors
+    private Color originalColor = new(0.0f, 0.0f, 0.0f, 0.0f);
+    private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
 
     [Header("Drone Variables")]
     [SerializeField] private float detectionTime = 3.0f;
@@ -38,7 +41,7 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
 
     private void Oscillate()
     {
-        float oscillation = Mathf.PingPong(Time.time * oscillationSpeed, 1);
+        float oscillation = Mathf.PingPong(Time.time * oscillationSpeed, 1.0f);
         transform.eulerAngles = Vector3.Lerp(oscillationStart, oscillationEnd, oscillation);
     }
 
@@ -63,7 +66,7 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
         {
             StopCoroutine(flashingConeCoroutine);
             flashingConeCoroutine = null;
-            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.0f, 0.0f, 0.0f); // Make sure the cone returns to orignal color
+            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = originalColor; // Make sure the cone returns to orignal color
         }
 
         if (detectingPlayerCoroutine != null)
@@ -78,9 +81,9 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
     {
         while (true)
         {
-            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.5f,0.0f,0.0f,0.5f);
+            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = detectedColor;
             yield return new WaitForSeconds(0.5f);
-            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            fieldOfView.GetComponent<MeshRenderer>().materials[0].color = originalColor;
             yield return new WaitForSeconds(0.5f);
         }
     }

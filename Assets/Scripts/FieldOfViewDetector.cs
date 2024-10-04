@@ -8,8 +8,8 @@ using UnityEngine.Events;
 public class FieldOfViewDetector: MonoBehaviour
 {
     [Header("Variables")]
-    [SerializeField][Range(0, 360)] public float viewAngle = 90f;  // The angle of the cone
-    [SerializeField] private float viewDistance = 5f;                // The distance of the FOV\
+    [Range(0, 360)] public float viewAngle = 90f;  // The angle of the cone
+    [SerializeField] private float viewDistance = 5f;                // The distance of the FOV
 
     public event Action OnPlayerEnterFOV;
     public event Action OnPlayerExitFOV;
@@ -55,13 +55,13 @@ public class FieldOfViewDetector: MonoBehaviour
                 if (!playerInRange)
                 {
                     playerInRange = true;
-                    Debug.Log("Player in FOV");
+                    //Debug.Log("Player in FOV");
                     OnPlayerEnterFOV?.Invoke();
                 }
             }
             else if (playerInRange)
             {
-                Debug.Log("Player not in FOV");
+                //Debug.Log("Player not in FOV");
                 playerInRange = false;
                 OnPlayerExitFOV?.Invoke();
             }
@@ -74,7 +74,7 @@ public class FieldOfViewDetector: MonoBehaviour
         {
             if (playerInRange)
             {
-                Debug.Log("Player not in FOV");
+                //Debug.Log("Player not in FOV");
                 playerInRange = false;
                 OnPlayerExitFOV?.Invoke();
             }
