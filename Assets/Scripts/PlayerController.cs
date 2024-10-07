@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    // == Player Movement Variables ==
+    [Header("Player Movement")]
     private Vector2 input;
     private CharacterController characterController;
     private Vector3 direction;
@@ -17,11 +17,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float sneakSpeed;
     private float previousSpeed;
 
-    // == Player Jump Variables ==
+    [Header("Player Jump")]
     private float gravity = -9.81f;
     [SerializeField] private float gravityMultiplier = 3.0f;
     private float velocity;
     [SerializeField] private float jumpPower;
+
+    [Header("Player Scale")]
+    [SerializeField] private Vector3 originalScale = new Vector3(0.5f, 0.5f, 0.5f);
+    [SerializeField] private Vector3 sneakScale = new Vector3(0.5f, 0.25f, 0.5f);
 
     private void Awake()
     {
@@ -79,16 +83,16 @@ public class PlayerController : MonoBehaviour
 
     public void Sneak(InputAction.CallbackContext context)
     {
-        if( context.started)
+        if(context.started)
         {
             previousSpeed = speed;
             speed = sneakSpeed;
-            gameObject.GetComponent<Transform>().localScale = new Vector3(1.0f, 0.75f, 1.0f);
+            gameObject.GetComponent<Transform>().localScale = sneakScale;
         }
         else if (context.canceled)
         {
             speed = previousSpeed;
-            gameObject.GetComponent<Transform>().localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            gameObject.GetComponent<Transform>().localScale = originalScale;
         }
     }
 

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI Objects")]
     public GameObject LoseOverlay;
+    public GameObject WinOverlay;
 
     private void Awake() {
         if (instance)
@@ -30,6 +31,14 @@ public class GameManager : MonoBehaviour
     {
         LoseOverlay.SetActive(true);
      
+        StopAllCoroutines();
+        Time.timeScale = 0;
+    }
+
+    public void YouWin()
+    {
+        WinOverlay.SetActive(true);
+
         StopAllCoroutines();
         Time.timeScale = 0;
     }
