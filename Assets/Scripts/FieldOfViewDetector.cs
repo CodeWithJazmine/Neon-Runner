@@ -45,15 +45,16 @@ public class FieldOfViewDetector: MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            Vector3 directionToPlayer = other.transform.position - transform.position;
-            float angle = Vector3.Angle(transform.forward, directionToPlayer);
+        Vector3 directionToPlayer = other.transform.position - transform.position;
+        float angle = Vector3.Angle(transform.forward, directionToPlayer);
 
-            if (angle < viewAngle / 2)
-            {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit))
+        {
+            if (hit.collider.CompareTag("Player") && angle < viewAngle / 2)
+             {
                 if (!playerInRange)
-                {
+                 {
                     playerInRange = true;
                     //Debug.Log("Player in FOV");
                     OnPlayerEnterFOV?.Invoke();
