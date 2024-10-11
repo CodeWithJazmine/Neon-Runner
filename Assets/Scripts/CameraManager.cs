@@ -11,6 +11,7 @@ public class CameraManager : MonoBehaviour
 
     private void Awake()
     {
+        target = GameObject.FindGameObjectWithTag("Player").transform;
         offset = transform.position - target.position;
     }
 

@@ -8,8 +8,8 @@ using UnityEngine.Events;
 public class FieldOfViewDetector: MonoBehaviour
 {
     [Header("Variables")]
-    [Range(0, 360)] public float viewAngle = 90f;  // The angle of the cone
-    [SerializeField] private float viewDistance = 5f;                // The distance of the FOV
+    [Range(0, 360)] public float viewAngle = 90f;        // The angle of the cone
+    [SerializeField] private float viewDistance = 5f;    // The distance of the FOV
 
     public event Action OnPlayerEnterFOV;
     public event Action OnPlayerExitFOV;
@@ -117,9 +117,11 @@ public class FieldOfViewDetector: MonoBehaviour
     {
         Gizmos.color = Color.green;
 
+        float scaleFactor = transform.lossyScale.x; // Getting the scale from the parent object
+
         // Calculate updated bounds based on the object's rotation
-        Vector3 leftBound = transform.position + transform.TransformDirection(DirectionFromAngle(-viewAngle / 2)) * viewDistance;
-        Vector3 rightBound = transform.position + transform.TransformDirection(DirectionFromAngle(viewAngle / 2)) * viewDistance;
+        Vector3 leftBound = transform.position + transform.TransformDirection(DirectionFromAngle(-viewAngle / 2)) * viewDistance * scaleFactor;
+        Vector3 rightBound = transform.position + transform.TransformDirection(DirectionFromAngle(viewAngle / 2)) * viewDistance * scaleFactor;
 
         // Draw the lines from the current position
         Gizmos.DrawLine(transform.position, leftBound);

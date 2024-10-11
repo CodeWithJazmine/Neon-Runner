@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.908, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2992546590367746611}
   m_Father: {fileID: 0}
@@ -123,9 +123,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smoothTime: 0.05
-  speed: 6
+  speed: 4
+  sneakSpeed: 2
   gravityMultiplier: 1
   jumpPower: 3.5
+  originalScale: {x: 0.5, y: 0.5, z: 0.5}
+  sneakScale: {x: 0.5, y: 0.25, z: 0.5}
 --- !u!143 &278239194873469230
 CharacterController:
   m_ObjectHideFlags: 0
