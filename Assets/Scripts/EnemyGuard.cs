@@ -21,7 +21,9 @@ public class EnemyGuard : MonoBehaviour
     private float originalDetectionTime;
     private float playerVisibleTimer;
     [SerializeField] GameObject alertUIObject;
+    [SerializeField] GameObject suspiciousUIObject;
 
+    
     [Header("Pathing Variables")]
     private Vector3[] waypoints;
     [SerializeField] private Transform pathHolder;
@@ -74,7 +76,10 @@ public class EnemyGuard : MonoBehaviour
             waypoints[i] = new Vector3(waypoints[i].x, transform.position.y, waypoints[i].z);
         }
 
+        // Set UI objects to false
         alertUIObject.SetActive(false);
+        suspiciousUIObject.SetActive(false);
+
         // Start following path
         StartCoroutine(FollowPath(waypoints));
     }
@@ -110,6 +115,8 @@ public class EnemyGuard : MonoBehaviour
                         StartChaseCoroutine(detectionTime);
                         playerDetected = true;
 
+                        alertUIObject.SetActive(true);
+                        suspiciousUIObject.SetActive(false);
                     }
                     // If player is within peripheral view
                     else if (angleToPlayer <= peripheralFOVAngle / 2.0f)
@@ -120,6 +127,8 @@ public class EnemyGuard : MonoBehaviour
                         StartChaseCoroutine(detectionTime);
                         playerDetected = true;
 
+                        suspiciousUIObject.SetActive(true);
+                        alertUIObject.SetActive(false);
                     }
                     // If player is behind the enemy (over the shoulder) and closer than the detection radius
                     else if (distanceToPlayer <= shoulderDetectionRadius)
@@ -129,6 +138,9 @@ public class EnemyGuard : MonoBehaviour
                         detectionTime = originalDetectionTime / 2.0f;
                         StartChaseCoroutine(detectionTime);
                         playerDetected = true;
+
+                        suspiciousUIObject.SetActive(true);
+                        alertUIObject.SetActive(false);
                     }
                 }
             }
@@ -217,11 +229,17 @@ public class EnemyGuard : MonoBehaviour
             playerVisibleTimer += Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
 
+            if(alertUIObject.activeSelf)
+            {
+                alertUIObject.transform.LookAt(Camera.main.transform);
+            }
+            if (suspiciousUIObject.activeSelf)
+            {
+                suspiciousUIObject.transform.LookAt(Camera.main.transform);
+            }
+
             // Interpolate the mesh renderer's original color to detected color based on player detection
             fieldOfView.GetComponent<MeshRenderer>().materials[0].color = Color.Lerp(originalColor, detectedColor, playerVisibleTimer / detectionTime);
-
-            alertUIObject.SetActive(true);
-            alertUIObject.transform.LookAt(Camera.main.transform);
 
             if (playerVisibleTimer >= detectionTime)
             {
@@ -242,6 +260,7 @@ public class EnemyGuard : MonoBehaviour
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
 
             alertUIObject.SetActive(false);
+            suspiciousUIObject.SetActive(false);
 
             // Interpolate the mesh renderer's detected color back to original color based on player detection
             fieldOfView.GetComponent<MeshRenderer>().materials[0].color = Color.Lerp(detectedColor, originalColor, 1 - (playerVisibleTimer / detectionTime));
