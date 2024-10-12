@@ -20,6 +20,7 @@ public class EnemyGuard : MonoBehaviour
     [SerializeField] private float detectionTime = 3.0f;
     private float originalDetectionTime;
     private float playerVisibleTimer;
+    [SerializeField] GameObject alertUIObject;
 
     [Header("Pathing Variables")]
     private Vector3[] waypoints;
@@ -73,6 +74,7 @@ public class EnemyGuard : MonoBehaviour
             waypoints[i] = new Vector3(waypoints[i].x, transform.position.y, waypoints[i].z);
         }
 
+        alertUIObject.SetActive(false);
         // Start following path
         StartCoroutine(FollowPath(waypoints));
     }
@@ -218,6 +220,9 @@ public class EnemyGuard : MonoBehaviour
             // Interpolate the mesh renderer's original color to detected color based on player detection
             fieldOfView.GetComponent<MeshRenderer>().materials[0].color = Color.Lerp(originalColor, detectedColor, playerVisibleTimer / detectionTime);
 
+            alertUIObject.SetActive(true);
+            alertUIObject.transform.LookAt(Camera.main.transform);
+
             if (playerVisibleTimer >= detectionTime)
             {
                 // TODO: perhaps have an event to specifically handle OnGuardCaughtPlayer instead of ending the game
@@ -235,6 +240,8 @@ public class EnemyGuard : MonoBehaviour
         {
             playerVisibleTimer -= Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
+
+            alertUIObject.SetActive(false);
 
             // Interpolate the mesh renderer's detected color back to original color based on player detection
             fieldOfView.GetComponent<MeshRenderer>().materials[0].color = Color.Lerp(detectedColor, originalColor, 1 - (playerVisibleTimer / detectionTime));

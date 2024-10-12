@@ -14,7 +14,6 @@ public class FieldOfViewDetector: MonoBehaviour
     [SerializeField] public float viewDistance = 5f;    // The distance of the FOV
 
     private Mesh mesh;
-    private MeshCollider meshCollider;
 
     void Start()
     {
@@ -45,9 +44,6 @@ public class FieldOfViewDetector: MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
-
-        // Assign the mesh to the mesh collider
-       // meshCollider.sharedMesh = mesh;
     }
 
     Vector3 DirectionFromAngle(float angleInDegrees)
