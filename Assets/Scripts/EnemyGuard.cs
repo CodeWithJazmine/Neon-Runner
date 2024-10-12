@@ -28,10 +28,11 @@ public class EnemyGuard : MonoBehaviour
     [SerializeField] private float waitTime = 3.0f;
     [SerializeField] private float turnSpeed = 90.0f;
 
-    private bool playerDetected = false;
+    private GameObject player;
     private Transform playerTransform;
     private Vector3 directionToPlayer;
     private float angleToPlayer;
+    private bool playerDetected = false;
 
     [SerializeField] private FieldOfViewDetector fieldOfView;
     float distanceToPlayer;
@@ -43,19 +44,25 @@ public class EnemyGuard : MonoBehaviour
 
     void Start()
     {
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        // Get player object and transform
+        player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             playerTransform = player.transform;
         }
 
-        if(fieldOfView != null)
+        // Get the FieldOfViewDetector component and assign variables
+        fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
+        if (fieldOfView != null)
         {
             mainFOVAngle = fieldOfView.viewAngle;
             detectionRadius = fieldOfView.viewDistance;
         }
+
+        // Set the detection radius of the sphere collider
         transform.GetComponent<SphereCollider>().radius = detectionRadius;
+
+        // Save the original detection time
         originalDetectionTime = detectionTime;
 
         // Get the waypoints from the pathHolder
@@ -72,17 +79,22 @@ public class EnemyGuard : MonoBehaviour
 
     private void CheckPlayerVisibility()
     {
+        // Calculate the direction, distance, and angle to the player
         directionToPlayer = (playerTransform.position - transform.position);
         distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
         angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        // Reset player detection
+        playerDetected = false;
 
         // Check if player is within detection radius
         if (distanceToPlayer <= detectionRadius)
         {
             // If player is in line of sight
             RaycastHit hit;
+
             Debug.DrawRay(transform.position, directionToPlayer, Color.red);
-            Debug.Log("Raycasting to player");
+
             if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRadius))
             {
                 if (hit.collider.CompareTag("Player"))
@@ -90,34 +102,39 @@ public class EnemyGuard : MonoBehaviour
                     // If player is within the main field of view
                     if (angleToPlayer <= mainFOVAngle / 2.0f)
                     {
-                        playerDetected = true;
                         Debug.Log("Player in Main FOV");
-                        //TODO: Add player detection logic here
+
+                        detectionTime = originalDetectionTime;
+                        StartChaseCoroutine(detectionTime);
+                        playerDetected = true;
+
                     }
                     // If player is within peripheral view
                     else if (angleToPlayer <= peripheralFOVAngle / 2.0f)
                     {
-                        playerDetected = true;
                         Debug.Log("Player in Peripheral FOV");
-                        //TODO: Add player detection logic here
+
+                        detectionTime = originalDetectionTime + 1.0f;
+                        StartChaseCoroutine(detectionTime);
+                        playerDetected = true;
+
                     }
-                    // If player is being the enemy (over the shoulder) and closer than the detection radius
+                    // If player is behind the enemy (over the shoulder) and closer than the detection radius
                     else if (distanceToPlayer <= shoulderDetectionRadius)
                     {
-                        playerDetected = true;
                         Debug.Log("Player in Shoulder FOV");
-                    }
-                    else
-                    {
-                        playerDetected = false;
-                    }
 
-                }
-                else
-                {
-                    playerDetected = false;
+                        detectionTime = originalDetectionTime / 2.0f;
+                        StartChaseCoroutine(detectionTime);
+                        playerDetected = true;
+                    }
                 }
             }
+        }
+
+        if (playerDetected == false)
+        {
+            StopChaseCoroutine(detectionTime);
         }
     }
 
@@ -134,11 +151,29 @@ public class EnemyGuard : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            playerDetected = false;
             Debug.Log("Player exited detection radius");
+
+            StopChaseCoroutine(detectionTime);
         }
     }
 
+    private void StartChaseCoroutine(float detectionTime)
+    {
+        if (chaseCoroutine == null)
+        {
+            chaseCoroutine = StartCoroutine(Chase(detectionTime));
+        }
+    }
+
+    private void StopChaseCoroutine(float detectionTime)
+    {
+        if (chaseCoroutine != null)
+        {
+            StopCoroutine(chaseCoroutine);
+            chaseCoroutine = null;
+            StartCoroutine(StopChase(detectionTime));
+        }
+    }
     IEnumerator FollowPath(Vector3[] waypoints)
     {
         transform.position = waypoints[0];
@@ -173,12 +208,10 @@ public class EnemyGuard : MonoBehaviour
         }
     }
 
-
     IEnumerator Chase(float detectionTime)
     {
         while (playerVisibleTimer < detectionTime)
         {
-
             playerVisibleTimer += Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
 
@@ -187,7 +220,7 @@ public class EnemyGuard : MonoBehaviour
 
             if (playerVisibleTimer >= detectionTime)
             {
-                // perhaps have an event to specifically handle OnGuardCaughtPlayer instead of ending the game
+                // TODO: perhaps have an event to specifically handle OnGuardCaughtPlayer instead of ending the game
                 GameManager.instance.YouLose();
                 yield break;
                 //OnGuardCaughtPlayer?.Invoke();
@@ -200,7 +233,6 @@ public class EnemyGuard : MonoBehaviour
     {
         while (playerVisibleTimer > 0)
         {
-
             playerVisibleTimer -= Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
 
