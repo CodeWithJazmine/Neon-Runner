@@ -4,82 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+// This script just renders the field of view mesh an object 
+
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class FieldOfViewDetector: MonoBehaviour
 {
     [Header("Variables")]
     [Range(0, 360)] public float viewAngle = 90f;        // The angle of the cone
-    [SerializeField] private float viewDistance = 5f;    // The distance of the FOV
-
-    public event Action OnPlayerEnterFOV;
-    public event Action OnPlayerExitFOV;
+    [SerializeField] public float viewDistance = 5f;    // The distance of the FOV
 
     private Mesh mesh;
     private MeshCollider meshCollider;
 
-    private Transform playerTransform;
-    private bool playerInRange = false;
-
     void Start()
     {
-        // Just used to draw the line from the enemy to the player can be removed later
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if(player != null)
-        {
-            playerTransform = player.transform;
-        }
-
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
-        meshCollider = GetComponent<MeshCollider>();
-        meshCollider.convex = true;
-        meshCollider.isTrigger = true;
         CreateViewMesh();
-    }
-
-    void Update()
-    {
-        Debug.DrawLine(transform.position, playerTransform.position, Color.red);
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        Vector3 directionToPlayer = other.transform.position - transform.position;
-        float angle = Vector3.Angle(transform.forward, directionToPlayer);
-
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, directionToPlayer, out hit))
-        {
-            if (hit.collider.CompareTag("Player") && angle < viewAngle / 2)
-             {
-                if (!playerInRange)
-                 {
-                    playerInRange = true;
-                    //Debug.Log("Player in FOV");
-                    OnPlayerEnterFOV?.Invoke();
-                }
-            }
-            else if (playerInRange)
-            {
-                //Debug.Log("Player not in FOV");
-                playerInRange = false;
-                OnPlayerExitFOV?.Invoke();
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            if (playerInRange)
-            {
-                //Debug.Log("Player not in FOV");
-                playerInRange = false;
-                OnPlayerExitFOV?.Invoke();
-            }
-        }
     }
 
     void CreateViewMesh()
@@ -105,7 +47,7 @@ public class FieldOfViewDetector: MonoBehaviour
         mesh.RecalculateNormals();
 
         // Assign the mesh to the mesh collider
-        meshCollider.sharedMesh = mesh;
+       // meshCollider.sharedMesh = mesh;
     }
 
     Vector3 DirectionFromAngle(float angleInDegrees)

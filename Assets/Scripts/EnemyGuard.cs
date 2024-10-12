@@ -1,21 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class EnemyGuard : MonoBehaviour, IChasePlayer
+public class EnemyGuard : MonoBehaviour
 {
     private Coroutine chaseCoroutine;
-    private FieldOfViewDetector fieldOfView;
+    //private FieldOfViewDetector fieldOfView;
 
     //Mesh renderer colors
     private Color originalColor = new(0.0f,0.0f,0.0f,0.0f);
     private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
 
-    public event Action OnGuardCaughtPlayer;
+    //public event Action OnGuardCaughtPlayer;
 
     [Header("Guard Variables")]
     [SerializeField] private float detectionTime = 3.0f;
+    private float originalDetectionTime;
     private float playerVisibleTimer;
 
     [Header("Pathing Variables")]
@@ -25,16 +28,35 @@ public class EnemyGuard : MonoBehaviour, IChasePlayer
     [SerializeField] private float waitTime = 3.0f;
     [SerializeField] private float turnSpeed = 90.0f;
 
+    private bool playerDetected = false;
+    private Transform playerTransform;
+    private Vector3 directionToPlayer;
+    private float angleToPlayer;
+
+    [SerializeField] private FieldOfViewDetector fieldOfView;
+    float distanceToPlayer;
+    [SerializeField] private float mainFOVAngle;
+    [SerializeField] private float peripheralFOVAngle = 120.0f;
+    [SerializeField] private float detectionRadius = 5.0f;
+    [SerializeField] private float shoulderDetectionRadius = 2.0f;
+
 
     void Start()
     {
-        // Get the FieldOfViewDetector component and subscribe to its events
-        fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
-        if (fieldOfView != null)
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
         {
-            fieldOfView.OnPlayerEnterFOV += ChasePlayer;
-            fieldOfView.OnPlayerExitFOV += StopChasingPlayer;
+            playerTransform = player.transform;
         }
+
+        if(fieldOfView != null)
+        {
+            mainFOVAngle = fieldOfView.viewAngle;
+            detectionRadius = fieldOfView.viewDistance;
+        }
+        transform.GetComponent<SphereCollider>().radius = detectionRadius;
+        originalDetectionTime = detectionTime;
 
         // Get the waypoints from the pathHolder
         waypoints = new Vector3[pathHolder.childCount];
@@ -46,6 +68,75 @@ public class EnemyGuard : MonoBehaviour, IChasePlayer
 
         // Start following path
         StartCoroutine(FollowPath(waypoints));
+    }
+
+    private void CheckPlayerVisibility()
+    {
+        directionToPlayer = (playerTransform.position - transform.position);
+        distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        // Check if player is within detection radius
+        if (distanceToPlayer <= detectionRadius)
+        {
+            // If player is in line of sight
+            RaycastHit hit;
+            Debug.DrawRay(transform.position, directionToPlayer, Color.red);
+            Debug.Log("Raycasting to player");
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRadius))
+            {
+                if (hit.collider.CompareTag("Player"))
+                {
+                    // If player is within the main field of view
+                    if (angleToPlayer <= mainFOVAngle / 2.0f)
+                    {
+                        playerDetected = true;
+                        Debug.Log("Player in Main FOV");
+                        //TODO: Add player detection logic here
+                    }
+                    // If player is within peripheral view
+                    else if (angleToPlayer <= peripheralFOVAngle / 2.0f)
+                    {
+                        playerDetected = true;
+                        Debug.Log("Player in Peripheral FOV");
+                        //TODO: Add player detection logic here
+                    }
+                    // If player is being the enemy (over the shoulder) and closer than the detection radius
+                    else if (distanceToPlayer <= shoulderDetectionRadius)
+                    {
+                        playerDetected = true;
+                        Debug.Log("Player in Shoulder FOV");
+                    }
+                    else
+                    {
+                        playerDetected = false;
+                    }
+
+                }
+                else
+                {
+                    playerDetected = false;
+                }
+            }
+        }
+    }
+
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            CheckPlayerVisibility();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerDetected = false;
+            Debug.Log("Player exited detection radius");
+        }
     }
 
     IEnumerator FollowPath(Vector3[] waypoints)
@@ -82,32 +173,12 @@ public class EnemyGuard : MonoBehaviour, IChasePlayer
         }
     }
 
-    public void ChasePlayer()
-    {
-       if (chaseCoroutine == null)
-       {
-           chaseCoroutine = StartCoroutine(Chase());
-       }
-        Debug.Log("Chasing Player");
 
-    }
-    public void StopChasingPlayer()
+    IEnumerator Chase(float detectionTime)
     {
-        if (chaseCoroutine != null)
+        while (playerVisibleTimer < detectionTime)
         {
-            StopCoroutine(chaseCoroutine);
-            chaseCoroutine = null;
-            StartCoroutine(StopChase());
-        }
-        Debug.Log("Stopped Chasing Player");
-       
-    }
 
-    IEnumerator Chase()
-    {
-        while(playerVisibleTimer < detectionTime)
-        {
-            
             playerVisibleTimer += Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
 
@@ -125,7 +196,7 @@ public class EnemyGuard : MonoBehaviour, IChasePlayer
         }
     }
 
-    IEnumerator StopChase()
+    IEnumerator StopChase(float detectionTime)
     {
         while (playerVisibleTimer > 0)
         {
@@ -139,6 +210,7 @@ public class EnemyGuard : MonoBehaviour, IChasePlayer
         yield return null;
     }
 
+
     void OnDrawGizmos()
     {
         Vector3 startPosition = pathHolder.GetChild(0).position;
@@ -151,6 +223,11 @@ public class EnemyGuard : MonoBehaviour, IChasePlayer
             previousPosition = waypoint.position;
         }
         Gizmos.DrawLine(previousPosition, startPosition);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius * transform.lossyScale.x); // Draw the detection radius
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, shoulderDetectionRadius * transform.lossyScale.x ); // Draw the shoulder detection radius
     }
 }
 

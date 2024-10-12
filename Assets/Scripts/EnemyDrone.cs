@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class EnemyDrone : MonoBehaviour, IChasePlayer
+public class EnemyDrone : MonoBehaviour
 {
     private Coroutine detectingPlayerCoroutine;
     private Coroutine flashingConeCoroutine;
@@ -23,12 +23,12 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
     void Start()
     {
         // Get the FieldOfViewDetector component and subscribe to its events
-        fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
-        if (fieldOfView != null)
-        {
-            fieldOfView.OnPlayerEnterFOV += ChasePlayer;
-            fieldOfView.OnPlayerExitFOV += StopChasingPlayer;
-        }
+        //fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
+        //if (fieldOfView != null)
+        //{
+        //    fieldOfView.OnPlayerEnterFOV += ChasePlayer;
+        //    fieldOfView.OnPlayerExitFOV += StopChasingPlayer;
+        //}
 
         oscillationStart = transform.eulerAngles + new Vector3(0f, fieldOfView.viewAngle / 2.0f, 0f);
         oscillationEnd = transform.eulerAngles + new Vector3(0f, -(fieldOfView.viewAngle / 2.0f), 0f);
@@ -46,7 +46,7 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
     }
 
     // Implementing the IChasePlayer interface
-    public void ChasePlayer()
+    public void ChasePlayer(Collider other)
     {
         if (flashingConeCoroutine == null)
         {
@@ -59,7 +59,7 @@ public class EnemyDrone : MonoBehaviour, IChasePlayer
         }
     }
 
-    public void StopChasingPlayer()
+    public void StopChasingPlayer(Collider other)
     {
 
         if (flashingConeCoroutine != null)
