@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyGuard : MonoBehaviour
 {
@@ -21,8 +22,9 @@ public class EnemyGuard : MonoBehaviour
     private float playerVisibleTimer;
     [SerializeField] GameObject alertUIObject;
     [SerializeField] GameObject suspiciousUIObject;
+    private NavMeshAgent agent;
 
-    
+
     [Header("Pathing Variables")]
     private Vector3[] waypoints;
     [SerializeField] private Transform pathHolder;
@@ -74,6 +76,10 @@ public class EnemyGuard : MonoBehaviour
             waypoints[i] = pathHolder.GetChild(i).position;
             waypoints[i] = new Vector3(waypoints[i].x, transform.position.y, waypoints[i].z);
         }
+
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = speed;
+        agent.angularSpeed = turnSpeed;
 
         // Set UI objects to false
         alertUIObject.SetActive(false);
@@ -189,24 +195,27 @@ public class EnemyGuard : MonoBehaviour
     }
     IEnumerator FollowPath(Vector3[] waypoints)
     {
-        transform.position = waypoints[0];
+        agent.SetDestination(waypoints[0]);
         int targetWaypointIndex = 1;
         Vector3 targetWaypoint = waypoints[targetWaypointIndex];
-        transform.LookAt(targetWaypoint);
 
-        while (true)
+
+        while(true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
-            if(transform.position ==  targetWaypoint)
+             agent.SetDestination(targetWaypoint);
+
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
                 targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
                 targetWaypoint = waypoints[targetWaypointIndex];
+
                 yield return new WaitForSeconds(waitTime);
-                yield return StartCoroutine(TurnToFace(targetWaypoint));
+
+                agent.SetDestination(targetWaypoint);
             }
             yield return null;
+            }
         }
-    }
 
     IEnumerator TurnToFace(Vector3 lookTarget)
     {
@@ -281,10 +290,10 @@ public class EnemyGuard : MonoBehaviour
         }
         Gizmos.DrawLine(previousPosition, startPosition);
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius * transform.lossyScale.x); // Draw the detection radius
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, shoulderDetectionRadius * transform.lossyScale.x ); // Draw the shoulder detection radius
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawWireSphere(transform.position, detectionRadius * transform.lossyScale.x); // Draw the detection radius
+        //Gizmos.color = Color.blue;
+        //Gizmos.DrawWireSphere(transform.position, shoulderDetectionRadius * transform.lossyScale.x ); // Draw the shoulder detection radius
     }
 }
 
