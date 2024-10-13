@@ -8,7 +8,6 @@ using UnityEngine;
 public class EnemyGuard : MonoBehaviour
 {
     private Coroutine chaseCoroutine;
-    //private FieldOfViewDetector fieldOfView;
 
     //Mesh renderer colors
     private Color originalColor = new(0.0f,0.0f,0.0f,0.0f);
@@ -38,7 +37,7 @@ public class EnemyGuard : MonoBehaviour
     private bool playerDetected = false;
 
     [SerializeField] private FieldOfViewDetector fieldOfView;
-    float distanceToPlayer;
+    private float distanceToPlayer;
     [SerializeField] private float mainFOVAngle;
     [SerializeField] private float peripheralFOVAngle = 120.0f;
     [SerializeField] private float detectionRadius = 5.0f;
@@ -146,7 +145,7 @@ public class EnemyGuard : MonoBehaviour
             }
         }
 
-        if (playerDetected == false)
+        if (!playerDetected)
         {
             StopChaseCoroutine(detectionTime);
         }

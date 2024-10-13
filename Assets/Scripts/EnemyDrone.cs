@@ -20,23 +20,59 @@ public class EnemyDrone : MonoBehaviour
     private Vector3 oscillationStart;
     private Vector3 oscillationEnd;
 
+    private GameObject player;
+    private Transform playerTransform;
+    private Vector3 directionToPlayer;
+    private float angleToPlayer;
+    private bool playerDetected = false;
+    private float mainFOVAngle;
+    private float detectionRadius;
+    private float distanceToPlayer;
+
     void Start()
     {
-        // Get the FieldOfViewDetector component and subscribe to its events
-        //fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
-        //if (fieldOfView != null)
-        //{
-        //    fieldOfView.OnPlayerEnterFOV += ChasePlayer;
-        //    fieldOfView.OnPlayerExitFOV += StopChasingPlayer;
-        //}
+        // Get player object and transform
+        player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerTransform = player.transform;
+        }
+        //Get the FieldOfViewDetector component and subscribe to its events
+       fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
+        if(fieldOfView != null)
+        {
+            mainFOVAngle = fieldOfView.viewAngle;
+            detectionRadius = fieldOfView.viewDistance;
+        }
+
+        // Set the detection radius of the sphere collider
+        transform.GetComponent<SphereCollider>().radius = detectionRadius;
+        transform.GetComponent<SphereCollider>().isTrigger = true;
 
         oscillationStart = transform.eulerAngles + new Vector3(0f, fieldOfView.viewAngle / 2.0f, 0f);
         oscillationEnd = transform.eulerAngles + new Vector3(0f, -(fieldOfView.viewAngle / 2.0f), 0f);
+
     }
 
     void Update()
     {
         Oscillate();
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            CheckPlayerVisibility();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            StopChasingPlayer();
+        }
     }
 
     private void Oscillate()
@@ -45,8 +81,46 @@ public class EnemyDrone : MonoBehaviour
         transform.eulerAngles = Vector3.Lerp(oscillationStart, oscillationEnd, oscillation);
     }
 
+    private void CheckPlayerVisibility()
+    {
+        // Calculate the direction, distance, and angle to the player
+        directionToPlayer = (playerTransform.position - transform.position);
+        distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        // Reset player detection
+        playerDetected = false;
+
+        // Check if player is within detection radius
+        if (distanceToPlayer <= detectionRadius)
+        {
+            // If player is in line of sight
+            RaycastHit hit;
+
+            Debug.DrawRay(transform.position, directionToPlayer, Color.red);
+
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRadius))
+            {
+                if (hit.collider.CompareTag("Player"))
+                {
+                    // If player is within the main field of view
+                    if (angleToPlayer <= mainFOVAngle / 2.0f)
+                    {
+                        ChasePlayer();
+                        playerDetected = true;
+                    }
+                }
+            }
+        }
+        if(!playerDetected)
+        {
+            StopChasingPlayer();
+        }
+    }
+
+
     // Implementing the IChasePlayer interface
-    public void ChasePlayer(Collider other)
+    public void ChasePlayer()
     {
         if (flashingConeCoroutine == null)
         {
@@ -59,7 +133,7 @@ public class EnemyDrone : MonoBehaviour
         }
     }
 
-    public void StopChasingPlayer(Collider other)
+    public void StopChasingPlayer()
     {
 
         if (flashingConeCoroutine != null)
