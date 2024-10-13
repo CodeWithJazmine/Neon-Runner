@@ -8,8 +8,11 @@ public class EnemyDrone : MonoBehaviour
 {
     private Coroutine detectingPlayerCoroutine;
     private Coroutine flashingConeCoroutine;
-    private FieldOfViewDetector fieldOfView;
-
+    [SerializeField] private FieldOfViewDetector fieldOfView;
+    [SerializeField] private HackingModule hackingModule;
+    [SerializeField] private GameObject pressE;
+    private bool canPressE;
+    private bool isAudioOverrideActive;
     //Mesh renderer colors
     private Color originalColor = new(0.0f, 0.0f, 0.0f, 0.0f);
     private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
@@ -52,15 +55,33 @@ public class EnemyDrone : MonoBehaviour
         oscillationStart = transform.eulerAngles + new Vector3(0f, fieldOfView.viewAngle / 2.0f, 0f);
         oscillationEnd = transform.eulerAngles + new Vector3(0f, -(fieldOfView.viewAngle / 2.0f), 0f);
 
+        // subscribe to the events
+        hackingModule = GetComponentInChildren<HackingModule>();
+        if (hackingModule != null)
+        {
+            hackingModule.PlayerInRange += CanPressE;
+        }
+
     }
 
     void Update()
     {
         Oscillate();
+
+        if(canPressE && Input.GetKeyDown(KeyCode.E))
+        {
+            AudioOverride();
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
+
+        if (isAudioOverrideActive)
+        {
+            return;
+        }
+
         if (other.CompareTag("Player"))
         {
             CheckPlayerVisibility();
@@ -71,7 +92,7 @@ public class EnemyDrone : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            StopChasingPlayer();
+            StopDetectingPlayer();
         }
     }
 
@@ -83,6 +104,10 @@ public class EnemyDrone : MonoBehaviour
 
     private void CheckPlayerVisibility()
     {
+        if (isAudioOverrideActive) 
+        {
+            return;
+        }
         // Calculate the direction, distance, and angle to the player
         directionToPlayer = (playerTransform.position - transform.position);
         distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
@@ -106,7 +131,7 @@ public class EnemyDrone : MonoBehaviour
                     // If player is within the main field of view
                     if (angleToPlayer <= mainFOVAngle / 2.0f)
                     {
-                        ChasePlayer();
+                        DetectPlayer();
                         playerDetected = true;
                     }
                 }
@@ -114,13 +139,13 @@ public class EnemyDrone : MonoBehaviour
         }
         if(!playerDetected)
         {
-            StopChasingPlayer();
+            StopDetectingPlayer();
         }
     }
 
 
     // Implementing the IChasePlayer interface
-    public void ChasePlayer()
+    public void DetectPlayer()
     {
         if (flashingConeCoroutine == null)
         {
@@ -133,7 +158,7 @@ public class EnemyDrone : MonoBehaviour
         }
     }
 
-    public void StopChasingPlayer()
+    public void StopDetectingPlayer()
     {
 
         if (flashingConeCoroutine != null)
@@ -166,6 +191,30 @@ public class EnemyDrone : MonoBehaviour
     {
         yield return new WaitForSeconds(countdown);
         GameManager.instance.YouLose();
+    }
+
+    private void CanPressE()
+    {
+        canPressE = true;
+    }
+
+    private void AudioOverride()
+    {
+        Debug.Log("Audio Override!");
+        pressE.SetActive(false);
+        canPressE = false;
+        isAudioOverrideActive = true;
+        hackingModule.GetComponent<BoxCollider>().enabled = false;
+
+        // Color the drone green
+        GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
+
+        // Color the field of view green
+        fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
+
+        // Color the light green
+        GetComponentInChildren<Light>().color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
+
     }
 
 }
