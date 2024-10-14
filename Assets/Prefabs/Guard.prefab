@@ -125,18 +125,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 688c04be7f0f9ab47a61589a60af66dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerVisible: 0
   detectionTime: 3
+  fieldOfView: {fileID: 0}
+  mainFOVAngle: 0
+  peripheralFOVAngle: 120
+  detectionRadius: 5
+  shoulderDetectionRadius: 1.3
   alertUIObject: {fileID: 3612793836741079648}
   suspiciousUIObject: {fileID: 2824457997014928994}
   pathHolder: {fileID: 0}
   speed: 2
   waitTime: 3
   turnSpeed: 200
-  fieldOfView: {fileID: 0}
-  mainFOVAngle: 0
-  peripheralFOVAngle: 120
-  detectionRadius: 5
-  shoulderDetectionRadius: 1.3
 --- !u!135 &5301577138316040548
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -300,7 +301,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6928319977608113048
 RectTransform:
   m_ObjectHideFlags: 0
@@ -434,7 +435,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1144931629574224519
 RectTransform:
   m_ObjectHideFlags: 0
