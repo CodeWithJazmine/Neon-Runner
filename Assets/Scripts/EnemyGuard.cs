@@ -18,7 +18,8 @@ public class EnemyGuard : MonoBehaviour
     private bool playerDetected;
     private bool isDetectingPlayer;
     private bool isWaiting = false;
-    public bool playerVisible;
+    private bool playerVisible;
+    private bool playerOutOfSight;
 
     #endregion
 
@@ -63,9 +64,22 @@ public class EnemyGuard : MonoBehaviour
     private int targetWaypointIndex = 0;
     #endregion
 
+
+    #region Attack Settings
+    [Header("Attack Settings")]
+    [SerializeField] private GameObject projectile;
+    [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private float attackDelay = 1.0f;
+    [SerializeField] private float stoppingDistance = 2.0f;
+    [SerializeField] private float playerFaceSpeed = 6.0f;
+    private float projectileTime;
+    private bool isShooting = false;
+    #endregion
+
     #region Player Reference
     private GameObject player;
     private Transform playerTransform;
+    private Vector3 lastKnownPlayerPos;
     #endregion
 
 
@@ -115,15 +129,44 @@ public class EnemyGuard : MonoBehaviour
     {
         CheckPlayerVisibility();
 
-        if(!playerDetected && !playerInSight)
+        if (!playerDetected && !playerInSight)
         {
+            agent.stoppingDistance = 0.0f;
             FollowPath();
         }
-        else if (playerDetected && playerInSight)
+        else if (playerDetected)
         {
-            agent.SetDestination(playerTransform.position);
-        }
+            // Keep chasing even if player is not in sight
+            if (playerInSight)
+            {
+                lastKnownPlayerPos = playerTransform.position;
 
+                agent.SetDestination(playerTransform.position);
+                playerOutOfSight = false;
+
+                agent.stoppingDistance = stoppingDistance;
+
+                // Face the player if in range
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    FacePlayer();
+
+                    if (!isShooting)
+                    {
+                        StartCoroutine(Attack());
+                    }
+                }
+            }
+            else if (!playerOutOfSight)
+            {
+                // Go to the last known player position
+                agent.SetDestination(lastKnownPlayerPos);
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    StartCoroutine(WaitAtLastKnownPlayerPos());
+                }
+            }
+        }
     }
 
     private void CheckPlayerVisibility()
@@ -172,7 +215,7 @@ public class EnemyGuard : MonoBehaviour
             }
         }
 
-        if (!playerVisible)
+        if (!playerVisible & playerInSight)
         { 
             StopDetecting(detectionTime);
 
@@ -180,6 +223,21 @@ public class EnemyGuard : MonoBehaviour
             playerDetected = false;
         }
         
+    }
+
+    private IEnumerator Attack()
+    {
+        isShooting = true;
+        Instantiate(projectile, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        yield return new WaitForSeconds(attackDelay);
+        isShooting = false;
+    }
+
+    private void FacePlayer()
+    {
+        directionToPlayer = (playerTransform.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(directionToPlayer.x, 0, directionToPlayer.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * playerFaceSpeed);
     }
 
     #region Player Detection Functions
@@ -275,6 +333,15 @@ public class EnemyGuard : MonoBehaviour
         suspiciousUIObject.SetActive(false);
         playerDetected = false;
         stopDetectCoroutine = null;
+    }
+
+    IEnumerator WaitAtLastKnownPlayerPos()
+    {
+        suspiciousUIObject.SetActive(true);
+        yield return new WaitForSeconds(waitTime);
+        suspiciousUIObject.SetActive(false);
+        playerOutOfSight = true;
+        playerDetected = false;
     }
 
     #endregion
