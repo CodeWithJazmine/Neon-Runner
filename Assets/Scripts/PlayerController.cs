@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float sneakSpeed;
     private float previousSpeed;
+    Animator animator;
 
     [Header("Player Jump")]
     private float gravity = -9.81f;
@@ -30,6 +31,11 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+    }
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -63,6 +69,7 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovement()
     {
         characterController.Move(direction * speed * Time.deltaTime);
+        
     }
 
 
@@ -71,6 +78,15 @@ public class PlayerController : MonoBehaviour
         input = context.ReadValue<Vector2>();
         Vector3 toConvert = new Vector3(input.x, 0, input.y);
         direction = IsoVectorConvert(toConvert);
+
+        if(input == Vector2.zero)
+        {
+            animator.SetBool("isWalking", false);
+        }
+        else
+        {
+            animator.SetBool("isWalking", true);
+        }
     }
 
     public void Jump(InputAction.CallbackContext context)
