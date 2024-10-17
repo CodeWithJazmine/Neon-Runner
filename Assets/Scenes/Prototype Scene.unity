@@ -2747,17 +2747,6 @@ PrefabInstance:
       objectReference: {fileID: 1746883000}
     - target: {fileID: 2138852998269247593, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
         type: 3}
-      propertyPath: projectile
-      value: 
-      objectReference: {fileID: 1122627714242496767, guid: 9b3da7979ddb7ae4ea7d3cfc8117657e,
-        type: 3}
-    - target: {fileID: 2138852998269247593, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
-        type: 3}
-      propertyPath: attackDelay
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2138852998269247593, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
-        type: 3}
       propertyPath: peripheralView
       value: 
       objectReference: {fileID: 0}
@@ -2771,11 +2760,6 @@ PrefabInstance:
       propertyPath: rightShoulderView
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 2138852998269247593, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
-        type: 3}
-      propertyPath: projectileSpawnPoint
-      value: 
-      objectReference: {fileID: 722454535}
     - target: {fileID: 2356194814523111696, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
         type: 3}
       propertyPath: m_IsActive
@@ -2846,18 +2830,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8683313902920759943, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
-        type: 3}
-      propertyPath: viewDistance
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4485406942167450065, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 722454535}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e466bd97c4760d4fb2cc9eefe96f78a, type: 3}
 --- !u!1001 &599373740
@@ -3263,37 +3238,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46e18d94e2668c5479029197e6379a8e, type: 3}
---- !u!1 &722454534
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 722454535}
-  m_Layer: 0
-  m_Name: Projectile Spawn Point
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &722454535
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 722454534}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0002836585, y: 0, z: 0.70710695}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 926770797}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &745673450
 GameObject:
   m_ObjectHideFlags: 0
@@ -4235,12 +4179,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1613840783}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!4 &926770797 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4485406942167450065, guid: 7e466bd97c4760d4fb2cc9eefe96f78a,
-    type: 3}
-  m_PrefabInstance: {fileID: 565187655}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &926933531
 GameObject:
   m_ObjectHideFlags: 0

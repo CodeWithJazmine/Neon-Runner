@@ -170,7 +170,8 @@ public class EnemyGuard : MonoBehaviour
     private void CheckPlayerVisibility()
     {
         // Calculate the direction, distance, and angle to the player
-        directionToPlayer = (playerTransform.position - transform.position);
+        // Have to add 1.0f to the player's position to make sure the drone is looking at the player's center instead of feet/root
+        directionToPlayer = ((playerTransform.position + new Vector3(0, 1.0f, 0)) - transform.position);
         distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
         angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
@@ -183,6 +184,7 @@ public class EnemyGuard : MonoBehaviour
             // If player is in line of sight
             if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, detectionRadius))
             {
+                Debug.DrawRay(transform.position, directionToPlayer, Color.red);
                 if (hit.collider.CompareTag("Player"))
                 {
                     // If player is within the main field of view

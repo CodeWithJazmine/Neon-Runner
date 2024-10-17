@@ -38,6 +38,7 @@ Transform:
   - {fileID: 7097024119369033181}
   - {fileID: 5833754243324515190}
   - {fileID: 8058753082912007772}
+  - {fileID: 1567730564671309201}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -134.977, z: 0}
 --- !u!33 &6303061630596690947
@@ -125,7 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 688c04be7f0f9ab47a61589a60af66dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerVisible: 0
   detectionTime: 3
   fieldOfView: {fileID: 0}
   mainFOVAngle: 0
@@ -138,6 +138,12 @@ MonoBehaviour:
   speed: 2
   waitTime: 3
   turnSpeed: 200
+  projectile: {fileID: 1122627714242496767, guid: 9b3da7979ddb7ae4ea7d3cfc8117657e,
+    type: 3}
+  projectileSpawnPoint: {fileID: 1567730564671309201}
+  attackDelay: 3
+  stoppingDistance: 2
+  playerFaceSpeed: 6
 --- !u!135 &5301577138316040548
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -284,6 +290,37 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &2290476697021303169
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1567730564671309201}
+  m_Layer: 0
+  m_Name: Projectile Spawn Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1567730564671309201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2290476697021303169}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0002836585, y: 0, z: 0.70710695}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4485406942167450065}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2824457997014928994
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +702,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4485406942167450065}
     m_Modifications:
+    - target: {fileID: 8658273130271169, guid: 3be260d625a305f45858026489abcd85, type: 3}
+      propertyPath: viewDistance
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1937146592098242203, guid: 3be260d625a305f45858026489abcd85,
         type: 3}
       propertyPath: m_LocalPosition.x
