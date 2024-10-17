@@ -13,6 +13,9 @@ public class EnemyDrone : MonoBehaviour
     [SerializeField] private GameObject pressE;
     private bool canPressE;
     private bool isAudioOverrideActive;
+
+    public Action OnDroneHacked;
+
     //Mesh renderer colors
     private Color originalColor = new(0.0f, 0.0f, 0.0f, 0.0f);
     private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
@@ -109,7 +112,8 @@ public class EnemyDrone : MonoBehaviour
             return;
         }
         // Calculate the direction, distance, and angle to the player
-        directionToPlayer = (playerTransform.position - transform.position);
+        // Have to add 1.0f to the player's position to make sure the drone is looking at the player's center instead of feet/root
+        directionToPlayer = ((playerTransform.position + new Vector3(0, 1.0f, 0)) - transform.position);
         distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
         angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
@@ -126,6 +130,7 @@ public class EnemyDrone : MonoBehaviour
 
             if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRadius))
             {
+                Debug.Log(hit.collider.gameObject.name);
                 if (hit.collider.CompareTag("Player"))
                 {
                     // If player is within the main field of view
@@ -206,15 +211,10 @@ public class EnemyDrone : MonoBehaviour
         isAudioOverrideActive = true;
         hackingModule.GetComponent<BoxCollider>().enabled = false;
 
-        // Color the drone green
-        GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
+        OnDroneHacked?.Invoke();
 
         // Color the field of view green
         fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
-
-        // Color the light green
-        GetComponentInChildren<Light>().color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
-
     }
 
 }

@@ -13,6 +13,12 @@ public class GameManager : MonoBehaviour
     public GameObject LoseOverlay;
     public GameObject WinOverlay;
 
+    [Header("Game Objectives")]
+    public int hackedEnemyDrones = 0;
+    public int totalEnemyDrones = 0;
+    private EnemyDrone EnemyDrone;
+
+
     private void Awake() {
         if (instance)
         {
@@ -24,7 +30,36 @@ public class GameManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(this);
+    }
 
+    public void Start()
+    {
+        totalEnemyDrones = GameObject.FindGameObjectsWithTag("EnemyDrone").Length;
+        EnemyDrone[] enemyDrones = FindObjectsOfType<EnemyDrone>();
+        foreach (EnemyDrone drone in enemyDrones)
+        {
+            if (drone != null)
+            {
+                drone.OnDroneHacked += DroneHacked;
+            }
+        }
+
+    }
+
+    private void DroneHacked()
+    {
+        hackedEnemyDrones++;
+        CheckWinCondition();
+    }
+
+    private void CheckWinCondition()
+    {
+        // Can add more win conditions here
+
+        if (hackedEnemyDrones >= totalEnemyDrones)
+        {
+            YouWin();
+        }
     }
 
     public void YouLose()
