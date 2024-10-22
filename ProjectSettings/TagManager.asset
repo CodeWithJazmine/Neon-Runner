@@ -5,6 +5,13 @@ TagManager:
   serializedVersion: 2
   tags:
   - EnemyDrone
+  - LoseOverlay
+  - WinOverlay
+  - ObjectiveUI
+  - OverrideDroneText
+  - DronesHackedText
+  - DronesToBeHackedText
+  - DronesOverridenText
   layers:
   - Default
   - TransparentFX

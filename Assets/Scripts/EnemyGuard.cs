@@ -51,6 +51,7 @@ public class EnemyGuard : MonoBehaviour
     #region Movement and Pathing
     [Header("Movement and Pathing")]
     private NavMeshAgent agent;
+    Animator animator;
 
     // Pathing variables
     [SerializeField] private Transform pathHolder;
@@ -121,6 +122,8 @@ public class EnemyGuard : MonoBehaviour
         targetWaypoint = waypoints[targetWaypointIndex];
         agent.SetDestination(targetWaypoint);
 
+        animator = GetComponentInChildren<Animator>();
+
     }
 
     void Update()
@@ -164,6 +167,16 @@ public class EnemyGuard : MonoBehaviour
                     StartCoroutine(WaitAtLastKnownPlayerPos());
                 }
             }
+        }
+
+        // Check if the guard is walking by looking at the NavMeshAgent's velocity
+        if (agent.velocity.magnitude > 0.1f && agent.remainingDistance > agent.stoppingDistance)
+        {
+            animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            animator.SetBool("isWalking", false);
         }
     }
 
@@ -351,6 +364,7 @@ public class EnemyGuard : MonoBehaviour
 
     void FollowPath()
     {
+        animator.SetBool("isWalking", true);
         // If agent reaches its current waypoint
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
@@ -358,8 +372,17 @@ public class EnemyGuard : MonoBehaviour
             {
                 StartCoroutine(WaitAtWaypoint());
             }
+            else
+            {
+                animator.SetBool("isWalking", false);  // Set animation to idle while waiting
+            }
+            }
+        else
+        {
+            // Set animation to walking while moving
+            animator.SetBool("isWalking", true);
         }
-    }
+        }
 
     IEnumerator WaitAtWaypoint()
     {

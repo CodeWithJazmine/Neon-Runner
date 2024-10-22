@@ -45,3 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LoseOverlay: {fileID: 0}
+  WinOverlay: {fileID: 0}
+  ObjectiveUI: {fileID: 0}
+  OverrideDroneText: {fileID: 0}
+  DronesHackedText: {fileID: 0}
+  DronesToBeHackedText: {fileID: 0}
+  hackedEnemyDrones: 0
+  totalEnemyDrones: 0
