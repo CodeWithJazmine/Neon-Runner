@@ -14,19 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float smoothTime = 0.05f;
     private float currentVelocity;
     [SerializeField] private float speed;
-    [SerializeField] private float sneakSpeed;
-    private float previousSpeed;
     Animator animator;
-
-    [Header("Player Jump")]
-    private float gravity = -9.81f;
-    [SerializeField] private float gravityMultiplier = 3.0f;
-    private float velocity;
-    [SerializeField] private float jumpPower;
-
-    [Header("Player Scale")]
-    [SerializeField] private Vector3 originalScale = new Vector3(0.5f, 0.5f, 0.5f);
-    [SerializeField] private Vector3 sneakScale = new Vector3(0.5f, 0.25f, 0.5f);
 
     private void Awake()
     {
@@ -40,22 +28,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        ApplyGravity();
         ApplyRotation();
         ApplyMovement();
-    }
-
-    private void ApplyGravity()
-    {
-        if (IsGrounded() && velocity < 0)
-        {
-            velocity = -1f;
-        }
-        else
-        {
-            velocity += gravity * gravityMultiplier * Time.deltaTime;
-        }
-        direction.y = velocity;
     }
 
     private void ApplyRotation()
@@ -69,7 +43,6 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovement()
     {
         characterController.Move(direction * speed * Time.deltaTime);
-        
     }
 
 
@@ -87,34 +60,6 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("isWalking", true);
         }
-    }
-
-    public void Jump(InputAction.CallbackContext context)
-    {
-        if (!context.started) return;
-        if (!IsGrounded()) return;
-
-        velocity += jumpPower;
-    }
-
-    public void Sneak(InputAction.CallbackContext context)
-    {
-        if(context.started)
-        {
-            previousSpeed = speed;
-            speed = sneakSpeed;
-            gameObject.GetComponent<Transform>().localScale = sneakScale;
-        }
-        else if (context.canceled)
-        {
-            speed = previousSpeed;
-            gameObject.GetComponent<Transform>().localScale = originalScale;
-        }
-    }
-
-    private bool IsGrounded()
-    {
-        return characterController.isGrounded;
     }
 
     private Vector3 IsoVectorConvert(Vector3 vector)

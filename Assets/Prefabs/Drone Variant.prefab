@@ -291,17 +291,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Drone Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1102490093963696, guid: 5d594cd7305e4cc49bcb17f30167185a, type: 3}
+      propertyPath: m_TagString
+      value: EnemyDrone
+      objectReference: {fileID: 0}
     - target: {fileID: 4723018560654850, guid: 5d594cd7305e4cc49bcb17f30167185a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.3475239
+      value: 2.97
       objectReference: {fileID: 0}
     - target: {fileID: 4723018560654850, guid: 5d594cd7305e4cc49bcb17f30167185a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.19
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4723018560654850, guid: 5d594cd7305e4cc49bcb17f30167185a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5
+      value: 0.22
       objectReference: {fileID: 0}
     - target: {fileID: 4723018560654850, guid: 5d594cd7305e4cc49bcb17f30167185a, type: 3}
       propertyPath: m_LocalRotation.w

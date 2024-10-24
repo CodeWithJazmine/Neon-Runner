@@ -14,8 +14,10 @@ public class GameManager : MonoBehaviour
     private bool gameIsOver = false;
 
     [Header("UI Objects")]
+    public GameObject UIObject;
     public GameObject LoseOverlay;
     public GameObject WinOverlay;
+    public GameObject HealthBar;
     public GameObject ObjectiveUI;
     public TextMeshProUGUI OverrideDroneText;
     public TextMeshProUGUI DronesOverridenText;
@@ -25,21 +27,26 @@ public class GameManager : MonoBehaviour
     [Header("Game Objectives")]
     public int hackedEnemyDrones = 0;
     public int totalEnemyDrones = 0;
-    private EnemyDrone EnemyDrone;
 
-
-
-    private void Awake() {
+    private void Awake()
+    {
+        // Ensure the GameManager is a singleton
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); // Keep this object across scenes
+            //DontDestroyOnLoad(gameObject); // Keep this object across scenes
         }
         else
         {
             Destroy(gameObject); // Prevent duplicate GameManager
         }
     }
+
+    private void Start()
+    {   
+        InitializeGame();
+    }
+
 
     private void OnEnable()
     {
@@ -67,31 +74,6 @@ public class GameManager : MonoBehaviour
 
     private void InitializeGame()
     {
-
-        // Find and reinitialize all UI objects in the new scene
-        LoseOverlay = GameObject.FindGameObjectWithTag("LoseOverlay");
-        WinOverlay = GameObject.FindGameObjectWithTag("WinOverlay");
-        ObjectiveUI = GameObject.FindGameObjectWithTag("ObjectiveUI");
-
-        // Ensure the UI elements exist and weren't destroyed
-        if (LoseOverlay == null || WinOverlay == null || ObjectiveUI == null)
-        {
-            Debug.LogError("One or more UI elements could not be found after scene load!");
-            return;
-        }
-
-        OverrideDroneText = GameObject.FindGameObjectWithTag("OverrideDroneText")?.GetComponent<TextMeshProUGUI>();
-        DronesHackedText = GameObject.FindGameObjectWithTag("DronesHackedText")?.GetComponent<TextMeshProUGUI>();
-        DronesToBeHackedText = GameObject.FindGameObjectWithTag("DronesToBeHackedText")?.GetComponent<TextMeshProUGUI>();
-        DronesOverridenText = GameObject.FindGameObjectWithTag("DronesOverridenText")?.GetComponent<TextMeshProUGUI>();
-
-        // Ensure all text elements are valid
-        if (OverrideDroneText == null || DronesHackedText == null || DronesToBeHackedText == null || DronesOverridenText == null)
-        {
-            Debug.LogError("One or more text elements could not be found after scene load!");
-            return;
-        }
-
         hackedEnemyDrones = 0;
         gameIsOver = false;
 
@@ -107,6 +89,7 @@ public class GameManager : MonoBehaviour
 
         LoseOverlay.SetActive(false);
         WinOverlay.SetActive(false);
+        HealthBar.SetActive(false);
 
         OverrideDroneText.gameObject.SetActive(false);
         DronesHackedText.text = hackedEnemyDrones.ToString();
@@ -125,6 +108,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         ObjectiveUI.SetActive(false);
 
+        HealthBar.SetActive(true);
         DronesOverridenText.gameObject.SetActive(true);
         DronesHackedText.gameObject.SetActive(true);
         DronesToBeHackedText.gameObject.SetActive(true);
