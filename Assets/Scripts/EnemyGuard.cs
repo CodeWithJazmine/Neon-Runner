@@ -100,6 +100,7 @@ public class EnemyGuard : MonoBehaviour
         }
 
         // Set the detection radius of the sphere collider
+        detectionRadius = detectionRadius * transform.lossyScale.x; // Scale the detection radius based on the object's scale
         transform.GetComponent<SphereCollider>().radius = detectionRadius;
 
         // Get the waypoints from the pathHolder
@@ -129,6 +130,12 @@ public class EnemyGuard : MonoBehaviour
     void Update()
     {
         CheckPlayerVisibility();
+
+        // Get the movement speed of the NavMeshAgent
+        float speed = agent.velocity.magnitude;
+
+        // Update animator with speed to switch between idle and walk animations
+        animator.SetFloat("Speed", speed);
 
         if (!playerDetected && !playerInSight)
         {
@@ -167,16 +174,6 @@ public class EnemyGuard : MonoBehaviour
                     StartCoroutine(WaitAtLastKnownPlayerPos());
                 }
             }
-        }
-
-        // Check if the guard is walking by looking at the NavMeshAgent's velocity
-        if (agent.velocity.magnitude > 0.1f && agent.remainingDistance > agent.stoppingDistance)
-        {
-            animator.SetBool("isWalking", true);
-        }
-        else
-        {
-            animator.SetBool("isWalking", false);
         }
     }
 
@@ -364,7 +361,7 @@ public class EnemyGuard : MonoBehaviour
 
     void FollowPath()
     {
-        animator.SetBool("isWalking", true);
+        //animator.SetBool("isWalking", true);
         // If agent reaches its current waypoint
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
@@ -372,17 +369,9 @@ public class EnemyGuard : MonoBehaviour
             {
                 StartCoroutine(WaitAtWaypoint());
             }
-            else
-            {
-                animator.SetBool("isWalking", false);  // Set animation to idle while waiting
-            }
-            }
-        else
-        {
-            // Set animation to walking while moving
-            animator.SetBool("isWalking", true);
         }
-        }
+
+    }
 
     IEnumerator WaitAtWaypoint()
     {
