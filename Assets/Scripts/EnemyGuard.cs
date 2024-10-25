@@ -44,7 +44,7 @@ public class EnemyGuard : MonoBehaviour
     [SerializeField] private GameObject suspiciousUIObject;
 
     // Mesh renderer colors
-    private Color originalColor = new(0.0f, 0.0f, 0.0f, 0.0f);
+    private Color originalColor = new(0.2117647f, 0.1294117f, 0.7450981f, 0.5f);
     private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
 
     #endregion
@@ -145,6 +145,7 @@ public class EnemyGuard : MonoBehaviour
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
                     FacePlayer();
+                    GameManager.instance.YouLose();
                 }
             }
             else if (!playerOutOfSight)
@@ -292,7 +293,6 @@ public class EnemyGuard : MonoBehaviour
             playerInSight = true;
             alertUIObject.SetActive(true);
             suspiciousUIObject.SetActive(false);
-            GameManager.instance.YouLose();
         }
 
          isDetectingPlayer = false;

@@ -10,6 +10,7 @@ public class EnemyDrone : MonoBehaviour
     private Coroutine flashingConeCoroutine;
     [SerializeField] private FieldOfViewDetector fieldOfView;
     [SerializeField] private HackingModule hackingModule;
+    [SerializeField] private GameObject beaconFX;
     [SerializeField] private GameObject pressE;
     private bool canPressE;
     private bool isAudioOverrideActive;
@@ -17,7 +18,7 @@ public class EnemyDrone : MonoBehaviour
     public Action OnDroneHacked;
 
     //Mesh renderer colors
-    private Color originalColor = new(0.0f, 0.0f, 0.0f, 0.0f);
+    private Color originalColor = new(0.01568628f, 0.007843138f, 0.1529411f, 0.5f);
     private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
 
     [Header("Drone Variables")]
@@ -208,6 +209,7 @@ public class EnemyDrone : MonoBehaviour
         canPressE = false;
         isAudioOverrideActive = true;
         hackingModule.GetComponent<BoxCollider>().enabled = false;
+        beaconFX.SetActive(false);
 
         OnDroneHacked?.Invoke();
 
