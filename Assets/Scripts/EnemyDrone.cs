@@ -71,7 +71,7 @@ public class EnemyDrone : MonoBehaviour
     {
         Oscillate();
 
-        if(canPressE && Input.GetKeyDown(KeyCode.E))
+        if (canPressE && Input.GetKeyDown(KeyCode.E))
         {
             AudioOverride();
         }
@@ -124,13 +124,11 @@ public class EnemyDrone : MonoBehaviour
         if (distanceToPlayer <= detectionRadius)
         {
             // If player is in line of sight
-            RaycastHit hit;
 
             Debug.DrawRay(transform.position, directionToPlayer, Color.red);
 
-            if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRadius))
+            if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, detectionRadius))
             {
-                Debug.Log(hit.collider.gameObject.name);
                 if (hit.collider.CompareTag("Player"))
                 {
                     // If player is within the main field of view
@@ -215,6 +213,7 @@ public class EnemyDrone : MonoBehaviour
 
         // Color the field of view green
         fieldOfView.GetComponent<MeshRenderer>().materials[0].color = new Color(0.0f, 0.5f, 0.0f, 0.5f);
+        this.GetComponent<Light>().color = new Color(0.0f, 0.5f, 0.0f, 1.0f);
     }
 
 }

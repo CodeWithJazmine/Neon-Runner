@@ -44,7 +44,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {   
+        
         InitializeGame();
+
     }
 
 
@@ -83,6 +85,7 @@ public class GameManager : MonoBehaviour
         {
             if (drone != null)
             {
+                drone.OnDroneHacked -= DroneHacked;
                 drone.OnDroneHacked += DroneHacked;
             }
         }
@@ -116,6 +119,7 @@ public class GameManager : MonoBehaviour
     private void DroneHacked()
     {
         hackedEnemyDrones++;
+        Debug.Log(hackedEnemyDrones);
         DronesHackedText.text = hackedEnemyDrones.ToString();
         CheckWinCondition();
     }

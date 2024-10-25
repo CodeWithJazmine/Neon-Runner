@@ -161,13 +161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e22d8b2f876f95f4c9d0c4e97b5c4c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothTime: 0.05
-  speed: 4
-  sneakSpeed: 2
-  gravityMultiplier: 1
-  jumpPower: 3.5
-  originalScale: {x: 0.5, y: 0.5, z: 0.5}
-  sneakScale: {x: 0.5, y: 0.25, z: 0.5}
+  smoothTime: 0.2
+  speed: 2.5
 --- !u!143 &6774293118862311785
 CharacterController:
   m_ObjectHideFlags: 0
