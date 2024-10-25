@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     public GameObject UIObject;
     public GameObject LoseOverlay;
     public GameObject WinOverlay;
-    public GameObject HealthBar;
     public GameObject ObjectiveUI;
     public TextMeshProUGUI OverrideDroneText;
     public TextMeshProUGUI DronesOverridenText;
@@ -92,7 +91,6 @@ public class GameManager : MonoBehaviour
 
         LoseOverlay.SetActive(false);
         WinOverlay.SetActive(false);
-        HealthBar.SetActive(false);
 
         OverrideDroneText.gameObject.SetActive(false);
         DronesHackedText.text = hackedEnemyDrones.ToString();
@@ -111,7 +109,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         ObjectiveUI.SetActive(false);
 
-        HealthBar.SetActive(true);
         DronesOverridenText.gameObject.SetActive(true);
         DronesHackedText.gameObject.SetActive(true);
         DronesToBeHackedText.gameObject.SetActive(true);

@@ -11,6 +11,7 @@ public class FieldOfViewDetector: MonoBehaviour
     [Header("Variables")]
     [Range(0, 360)] public float viewAngle = 90f;        // The angle of the cone
     [SerializeField] public float viewDistance = 5f;    // The distance of the FOV
+    [SerializeField] private int coneResolution = 120; // The number of edges in the mesh
 
     private Mesh mesh;
 
@@ -24,20 +25,29 @@ public class FieldOfViewDetector: MonoBehaviour
 
     void CreateViewMesh()
     {
-        Vector3[] vertices = new Vector3[3];
-        int[] triangles = new int[3];
+        Vector3[] vertices = new Vector3[coneResolution + 1];
+        int[] triangles = new int[(coneResolution - 1) * 3];
 
         // Calculate the angle of the left and right bounds of the cone
-        float angleLeft = -viewAngle / 2;
-        float angleRight = viewAngle / 2;
+        float currentAngle = -viewAngle / 2;
+        float angleStep = viewAngle / coneResolution;
 
-        vertices[0] = Vector3.zero;  // The origin point (at the enemy)
-        vertices[1] = DirectionFromAngle(angleLeft) * viewDistance;
-        vertices[2] = DirectionFromAngle(angleRight) * viewDistance;
+        // Create the vertices for the base of the cone
+        for (int i = 0; i < coneResolution; i++)
+        {
+            float angle = currentAngle + (i * angleStep);
+            Vector3 direction = DirectionFromAngle(angle) * viewDistance;
+            vertices[i + 1] = direction;
+        }
 
-        triangles[0] = 0;
-        triangles[1] = 1;
-        triangles[2] = 2;
+        // Create the triangles for the cone
+        for (int i = 0; i < coneResolution - 1; i++)
+        {
+            triangles[i * 3] = 0; // Apex
+            triangles[i * 3 + 1] = i + 1; // Current edge vertex
+            triangles[i * 3 + 2] = (i + 2 > coneResolution) ? 1 : i + 2; // Next edge vertex (wrap around)
+        }
+
 
         mesh.Clear();
         mesh.vertices = vertices;

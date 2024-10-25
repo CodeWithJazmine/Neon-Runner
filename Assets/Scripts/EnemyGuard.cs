@@ -23,12 +23,13 @@ public class EnemyGuard : MonoBehaviour
 
     #region Detection Settings
     [Header("Detection Settings")]
-    [SerializeField] private float detectionTime = 3.0f;
+    [SerializeField] private float detectionTime = 2.0f;
     [SerializeField] private FieldOfViewDetector fieldOfView;
     [SerializeField] private float mainFOVAngle;
     [SerializeField] private float peripheralFOVAngle = 180.0f;
     [SerializeField] private float detectionRadius = 5.0f;
     [SerializeField] private float shoulderDetectionRadius = 2.0f;
+    [SerializeField] private float playerFaceSpeed = 6.0f;
 
     private float playerVisibleTimer;
     private Vector3 directionToPlayer;
@@ -61,18 +62,6 @@ public class EnemyGuard : MonoBehaviour
     private Vector3[] waypoints;
     private Vector3 targetWaypoint;
     private int targetWaypointIndex = 0;
-    #endregion
-
-
-    #region Attack Settings
-    [Header("Attack Settings")]
-    [SerializeField] private GameObject projectile;
-    [SerializeField] private Transform projectileSpawnPoint;
-    [SerializeField] private float attackDelay = 1.0f;
-    [SerializeField] private float stoppingDistance = 2.0f;
-    [SerializeField] private float playerFaceSpeed = 6.0f;
-    private float projectileTime;
-    private bool isShooting = false;
     #endregion
 
     #region Player Reference
@@ -152,21 +141,14 @@ public class EnemyGuard : MonoBehaviour
                 agent.SetDestination(playerTransform.position);
                 playerOutOfSight = false;
 
-                agent.stoppingDistance = stoppingDistance;
-
                 // Face the player if in range
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
                     FacePlayer();
-
-                    if (!isShooting)
-                    {
-                        StartCoroutine(Attack());
-                    }
                 }
             }
             else if (!playerOutOfSight)
-            {
+            { 
                 // Go to the last known player position
                 agent.SetDestination(lastKnownPlayerPos);
                 if (agent.remainingDistance <= agent.stoppingDistance)
@@ -194,13 +176,13 @@ public class EnemyGuard : MonoBehaviour
             // If player is in line of sight
             if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, detectionRadius))
             {
-                Debug.DrawRay(transform.position, directionToPlayer, Color.red);
+                //Debug.DrawRay(transform.position, directionToPlayer, Color.red);
                 if (hit.collider.CompareTag("Player"))
                 {
                     // If player is within the main field of view
                     if (angleToPlayer <= mainFOVAngle / 2.0f)
                     {
-                        Debug.Log("Player in Main FOV");
+                        //Debug.Log("Player in Main FOV");
 
                         StartDetecting(detectionTime - 2.0f);
                         playerVisible = true;
@@ -208,7 +190,7 @@ public class EnemyGuard : MonoBehaviour
                     // If player is within peripheral view
                     else if (angleToPlayer <= peripheralFOVAngle / 2.0f)
                     {
-                        Debug.Log("Player in Peripheral FOV");
+                        //Debug.Log("Player in Peripheral FOV");
 
                         StartDetecting(detectionTime);
                         playerVisible = true;
@@ -217,7 +199,7 @@ public class EnemyGuard : MonoBehaviour
                     // If player is behind the enemy (over the shoulder) and closer than the detection radius
                     else if (distanceToPlayer <= shoulderDetectionRadius)
                     {
-                        Debug.Log("Player in Shoulder FOV");
+                        //Debug.Log("Player in Shoulder FOV");
                         StartDetecting(detectionTime / 2.0f);
                         playerVisible = true;
                     }
@@ -233,14 +215,6 @@ public class EnemyGuard : MonoBehaviour
             playerDetected = false;
         }
         
-    }
-
-    private IEnumerator Attack()
-    {
-        isShooting = true;
-        Instantiate(projectile, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
-        yield return new WaitForSeconds(attackDelay);
-        isShooting = false;
     }
 
     private void FacePlayer()
@@ -301,7 +275,7 @@ public class EnemyGuard : MonoBehaviour
         {
             suspiciousUIObject.SetActive(true);
             suspiciousUIObject.transform.LookAt(Camera.main.transform);
-            Debug.Log("UI Object LookAt Camera");
+            //Debug.Log("UI Object LookAt Camera");
 
             playerVisibleTimer += Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
@@ -313,11 +287,12 @@ public class EnemyGuard : MonoBehaviour
         }
         if (playerVisibleTimer >= detectionTime)
         {
-            Debug.Log("Player detected");
+            //Debug.Log("Player detected");
             playerDetected = true;
             playerInSight = true;
             alertUIObject.SetActive(true);
             suspiciousUIObject.SetActive(false);
+            GameManager.instance.YouLose();
         }
 
          isDetectingPlayer = false;
@@ -325,7 +300,7 @@ public class EnemyGuard : MonoBehaviour
 
     IEnumerator StopDetect(float detectionTime)
     {
-        Debug.Log("Stopping detection");
+        //Debug.Log("Stopping detection");
 
         while (playerVisibleTimer > 0)
         {
@@ -403,10 +378,10 @@ public class EnemyGuard : MonoBehaviour
         }
         Gizmos.DrawLine(previousPosition, startPosition);
 
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawWireSphere(transform.position, detectionRadius * transform.lossyScale.x); // Draw the detection radius
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawWireSphere(transform.position, shoulderDetectionRadius * transform.lossyScale.x ); // Draw the shoulder detection radius
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius * transform.lossyScale.x); // Draw the detection radius
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, shoulderDetectionRadius * transform.lossyScale.x); // Draw the shoulder detection radius
     }
     #endregion
 }
