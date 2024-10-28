@@ -49,12 +49,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 688c04be7f0f9ab47a61589a60af66dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionTime: 3
+  detectionTime: 2
   fieldOfView: {fileID: 0}
   mainFOVAngle: 0
   peripheralFOVAngle: 120
   detectionRadius: 5
-  shoulderDetectionRadius: 1.3
+  shoulderDetectionRadius: 2.5
   playerFaceSpeed: 6
   alertUIObject: {fileID: 3612793836741079648}
   suspiciousUIObject: {fileID: 2824457997014928994}
@@ -275,8 +275,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: '?'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 19f73dc5dba0dbc45ba9d2f747c8f02c, type: 2}
+  m_sharedMaterial: {fileID: -7092158812805667005, guid: 19f73dc5dba0dbc45ba9d2f747c8f02c,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -409,8 +410,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: '!'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 19f73dc5dba0dbc45ba9d2f747c8f02c, type: 2}
+  m_sharedMaterial: {fileID: -7092158812805667005, guid: 19f73dc5dba0dbc45ba9d2f747c8f02c,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

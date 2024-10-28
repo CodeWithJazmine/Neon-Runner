@@ -275,7 +275,7 @@ public class EnemyGuard : MonoBehaviour
         while (playerVisibleTimer < detectionTime)
         {
             suspiciousUIObject.SetActive(true);
-            suspiciousUIObject.transform.LookAt(Camera.main.transform);
+            suspiciousUIObject.transform.LookAt(Camera.main.transform.forward);
             //Debug.Log("UI Object LookAt Camera");
 
             playerVisibleTimer += Time.deltaTime;
