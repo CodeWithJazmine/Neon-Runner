@@ -1,23 +1,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 
 public class EnemyDrone : MonoBehaviour
 {
-    private Coroutine detectingPlayerCoroutine;
-    private Coroutine flashingConeCoroutine;
-    [SerializeField] private FieldOfViewDetector fieldOfView;
+
+    [Header("Hacking Module")]
+    public Action OnDroneHacked;
     [SerializeField] private HackingModule hackingModule;
     [SerializeField] private GameObject beaconFX;
     [SerializeField] private GameObject pressE;
+    [SerializeField] private TextMeshProUGUI overridingText;
+    [SerializeField] private Slider overridingSlider;
     private bool canPressE;
     private bool isAudioOverrideActive;
 
-    public Action OnDroneHacked;
-
-    //Mesh renderer colors
+    [Header("Mesh Renderer Colors")]
     private Color originalColor = new(0.01568628f, 0.007843138f, 0.1529411f, 0.5f);
     private Color detectedColor = new(0.5f, 0.0f, 0.0f, 0.5f);
 
@@ -26,7 +29,13 @@ public class EnemyDrone : MonoBehaviour
     [SerializeField] private float oscillationSpeed = 0.35f;
     private Vector3 oscillationStart;
     private Vector3 oscillationEnd;
+    private AudioSource moduleAudio;
+    private AudioSource droneAudio;
 
+    [Header("Player Detection")]
+    private Coroutine detectingPlayerCoroutine;
+    private Coroutine flashingConeCoroutine;
+    [SerializeField] private FieldOfViewDetector fieldOfView;
     private GameObject player;
     private Transform playerTransform;
     private Vector3 directionToPlayer;
@@ -36,6 +45,8 @@ public class EnemyDrone : MonoBehaviour
     private float detectionRadius;
     private float distanceToPlayer;
 
+    private PlayerController playerController;
+
     void Start()
     {
         // Get player object and transform
@@ -43,6 +54,7 @@ public class EnemyDrone : MonoBehaviour
         if (player != null)
         {
             playerTransform = player.transform;
+            playerController = player.GetComponent<PlayerController>();
         }
         //Get the FieldOfViewDetector component and subscribe to its events
        fieldOfView = GetComponentInChildren<FieldOfViewDetector>();
@@ -66,15 +78,50 @@ public class EnemyDrone : MonoBehaviour
             hackingModule.PlayerInRange += CanPressE;
         }
 
+        moduleAudio = hackingModule.GetComponent<AudioSource>();
+        droneAudio = GetComponent<AudioSource>();
+
     }
 
     void Update()
     {
         Oscillate();
 
-        if (canPressE && Input.GetKeyDown(KeyCode.E))
+        if(canPressE)
         {
-            AudioOverride();
+            if (playerController.GetIsOverriding())
+            {
+                // Start playing the audio if it's not already playing
+                
+                if (!moduleAudio.isPlaying)
+                {
+                    moduleAudio.Play();
+                }
+
+                pressE.SetActive(false);
+                overridingSlider.gameObject.SetActive(true);
+                overridingText.gameObject.SetActive(true);
+                overridingSlider.value += Time.deltaTime / 2;
+
+                if (overridingSlider.value >= overridingSlider.maxValue)
+                {
+                    
+                    AudioOverride();
+                }
+            }
+            else
+            {
+                // Stop the audio when player stops overriding
+                moduleAudio.Stop();
+                overridingSlider.value -= Time.deltaTime / 2;
+
+                if (overridingSlider.value <= 0)
+                {
+                    pressE.SetActive(true);
+                    overridingSlider.gameObject.SetActive(false);
+                    overridingText.gameObject.SetActive(false);
+                }
+            }
         }
     }
 
@@ -204,12 +251,17 @@ public class EnemyDrone : MonoBehaviour
 
     private void AudioOverride()
     {
+        moduleAudio.Stop();
+        droneAudio.Stop();
         Debug.Log("Audio Override!");
         pressE.SetActive(false);
         canPressE = false;
         isAudioOverrideActive = true;
         hackingModule.GetComponent<BoxCollider>().enabled = false;
         beaconFX.SetActive(false);
+        overridingSlider.gameObject.SetActive(false);
+        overridingText.gameObject.SetActive(false);
+        
 
         OnDroneHacked?.Invoke();
 

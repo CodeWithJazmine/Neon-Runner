@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,9 +17,40 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float speed;
     Animator animator;
 
+    public GameObject inputObject;
+    private PlayerInput playerInput;
+    private bool isOverriding = false;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+
+        if(inputObject != null)
+        {
+            playerInput = inputObject.GetComponent<PlayerInput>();
+
+            if(playerInput != null)
+            {
+                playerInput.actions["Override"].performed += OverridePerformed;
+                playerInput.actions["Override"].canceled += OverrideCanceled;
+            }
+        }
+    }
+
+    public void OverrideCanceled(InputAction.CallbackContext context)
+    {
+        isOverriding = false;
+    }
+
+    public void OverridePerformed(InputAction.CallbackContext context)
+    {
+        
+        isOverriding = true;
+    }
+
+    public bool GetIsOverriding()
+    {
+        return isOverriding;
     }
 
     private void Start()
