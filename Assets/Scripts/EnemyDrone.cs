@@ -105,7 +105,7 @@ public class EnemyDrone : MonoBehaviour
 
                 if (overridingSlider.value >= overridingSlider.maxValue)
                 {
-                    
+                    overridingSlider.value = 0;
                     AudioOverride();
                 }
             }
@@ -117,6 +117,7 @@ public class EnemyDrone : MonoBehaviour
 
                 if (overridingSlider.value <= 0)
                 {
+                    overridingSlider.value = 0;
                     pressE.SetActive(true);
                     overridingSlider.gameObject.SetActive(false);
                     overridingText.gameObject.SetActive(false);
