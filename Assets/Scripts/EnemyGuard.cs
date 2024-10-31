@@ -62,6 +62,7 @@ public class EnemyGuard : MonoBehaviour
     private Vector3[] waypoints;
     private Vector3 targetWaypoint;
     private int targetWaypointIndex = 0;
+    private float stoppingDistance;
     #endregion
 
     #region Player Reference
@@ -103,6 +104,7 @@ public class EnemyGuard : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.speed = speed;
         agent.angularSpeed = turnSpeed;
+        stoppingDistance = agent.stoppingDistance;
 
         // Set UI objects to false
         alertUIObject.SetActive(false);
@@ -136,21 +138,22 @@ public class EnemyGuard : MonoBehaviour
             // Keep chasing even if player is not in sight
             if (playerInSight)
             {
+                agent.stoppingDistance = stoppingDistance;
                 lastKnownPlayerPos = playerTransform.position;
 
-                agent.SetDestination(playerTransform.position);
+                agent.SetDestination(lastKnownPlayerPos);
                 playerOutOfSight = false;
 
-                // Face the player if in range
-                if (agent.remainingDistance <= agent.stoppingDistance)
-                {
-                    FacePlayer();
-                    GameManager.instance.YouLose();
-                }
+                FacePlayer();
+
+                StartCoroutine(FinalDetectionCountdown(detectionTime));
+            
             }
-            else if (!playerOutOfSight)
-            { 
+            else if (playerOutOfSight == true)
+            {
+                StopCoroutine(FinalDetectionCountdown(detectionTime));
                 // Go to the last known player position
+                lastKnownPlayerPos = playerTransform.position;
                 agent.SetDestination(lastKnownPlayerPos);
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
@@ -270,13 +273,12 @@ public class EnemyGuard : MonoBehaviour
 
     IEnumerator Detect(float detectionTime)
     {
-        Debug.Log("Detecting player");
+        //Debug.Log("Detecting player");
 
         while (playerVisibleTimer < detectionTime)
         {
             suspiciousUIObject.SetActive(true);
-            suspiciousUIObject.transform.LookAt(Camera.main.transform.forward);
-            //Debug.Log("UI Object LookAt Camera");
+            suspiciousUIObject.transform.LookAt(Camera.main.transform);
 
             playerVisibleTimer += Time.deltaTime;
             playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, detectionTime);
@@ -295,7 +297,7 @@ public class EnemyGuard : MonoBehaviour
             suspiciousUIObject.SetActive(false);
         }
 
-         isDetectingPlayer = false;
+        isDetectingPlayer = false;
     }
 
     IEnumerator StopDetect(float detectionTime)
@@ -318,6 +320,13 @@ public class EnemyGuard : MonoBehaviour
         suspiciousUIObject.SetActive(false);
         playerDetected = false;
         stopDetectCoroutine = null;
+    }
+
+    IEnumerator FinalDetectionCountdown(float detectionTime)
+    {
+        yield return new WaitForSeconds(detectionTime);
+        GameManager.instance.YouLose();
+        detectingCoroutine = null;
     }
 
     IEnumerator WaitAtLastKnownPlayerPos()
