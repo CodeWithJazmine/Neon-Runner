@@ -27,6 +27,11 @@ public class GameManager : MonoBehaviour
     public int hackedEnemyDrones = 0;
     public int totalEnemyDrones = 0;
 
+    [Header("UI Menus")]
+    public GameObject activeMenu;
+    public Canvas activeCanvas, previousCanvas;
+    public Canvas pauseMenuCanvas, optionsMenuCanvas, winMenuCanvas, loseMenuCanvas;
+
     private void Awake()
     {
         // Ensure the GameManager is a singleton
@@ -71,10 +76,16 @@ public class GameManager : MonoBehaviour
         {
             RestartGame();
         }
+
     }
 
     private void InitializeGame()
     {
+
+        pauseMenuCanvas = pauseMenuCanvas.GetComponent<Canvas>();
+        optionsMenuCanvas = optionsMenuCanvas.GetComponent<Canvas>();
+        loseMenuCanvas = loseMenuCanvas.GetComponent<Canvas>();
+
         hackedEnemyDrones = 0;
         gameIsOver = false;
 
