@@ -254,7 +254,6 @@ public class EnemyDrone : MonoBehaviour
     {
         moduleAudio.Stop();
         droneAudio.Stop();
-        Debug.Log("Audio Override!");
         pressE.SetActive(false);
         canPressE = false;
         isAudioOverrideActive = true;

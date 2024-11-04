@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Audio;
+using Unity.VisualScripting;
 
 
 public class GameManager : MonoBehaviour
@@ -29,8 +32,13 @@ public class GameManager : MonoBehaviour
 
     [Header("UI Menus")]
     public GameObject activeMenu;
-    public Canvas activeCanvas, previousCanvas;
-    public Canvas pauseMenuCanvas, optionsMenuCanvas, winMenuCanvas, loseMenuCanvas;
+    public GameObject activeCanvas, previousCanvas;
+    public GameObject pauseMenuCanvas, optionsMenuCanvas, winMenuCanvas, loseMenuCanvas;
+    public AudioSource inGameMusic;
+    public AudioMixer audioMixer;
+    private bool isPaused;
+    private float musicVolume = 0;
+    private float sfxVolume = 0;
 
     private void Awake()
     {
@@ -47,8 +55,11 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start()
-    {   
-        
+    {
+        pauseMenuCanvas.SetActive(false);
+        optionsMenuCanvas.SetActive(false);
+        loseMenuCanvas.SetActive(false);
+
         InitializeGame();
 
     }
@@ -77,15 +88,33 @@ public class GameManager : MonoBehaviour
             RestartGame();
         }
 
+        // Open pause menu
+        if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeMenu == null && activeCanvas == null)
+        {
+            pauseMenuCanvas.SetActive(true);
+            activeCanvas = pauseMenuCanvas;
+            previousCanvas = activeCanvas;
+            Paused();
+        }
+        // Close pause menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == pauseMenuCanvas)
+        {
+            pauseMenuCanvas.SetActive(false);
+            activeCanvas = null;
+            Unpaused();
+        }
+        // Close options menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == optionsMenuCanvas)
+        {
+            optionsMenuCanvas.SetActive(false);
+            activeCanvas = previousCanvas;
+            activeCanvas.SetActive(true);
+        }
+
     }
 
     private void InitializeGame()
     {
-
-        pauseMenuCanvas = pauseMenuCanvas.GetComponent<Canvas>();
-        optionsMenuCanvas = optionsMenuCanvas.GetComponent<Canvas>();
-        loseMenuCanvas = loseMenuCanvas.GetComponent<Canvas>();
-
         hackedEnemyDrones = 0;
         gameIsOver = false;
 
@@ -127,7 +156,6 @@ public class GameManager : MonoBehaviour
     private void DroneHacked()
     {
         hackedEnemyDrones++;
-        Debug.Log(hackedEnemyDrones);
         DronesHackedText.text = hackedEnemyDrones.ToString();
         CheckWinCondition();
     }
@@ -145,7 +173,7 @@ public class GameManager : MonoBehaviour
     public void YouLose()
     {
         LoseOverlay.SetActive(true);
-     
+
         StopAllCoroutines();
         Time.timeScale = 0;
         gameIsOver = true;
@@ -158,12 +186,82 @@ public class GameManager : MonoBehaviour
         StopAllCoroutines();
         Time.timeScale = 0;
         gameIsOver = true;
-       
+
     }
 
-    private void RestartGame()
+    public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        inGameMusic.UnPause();
+        audioMixer.SetFloat("musicVolume", musicVolume);
+        audioMixer.SetFloat("sfxVolume", sfxVolume);
         Time.timeScale = 1;
     }
+
+    public void Paused()
+    {
+        //pauses game
+        Time.timeScale = 0;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+
+        // pause IN GAME sound effects and IN GAME music
+        if (activeCanvas != null)
+        {
+            inGameMusic.Pause();
+        }
+
+        isPaused = !isPaused;
+    }
+
+    public void Unpaused()
+    {
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        // unpause IN GAME sound effects and IN GAME music
+        if (activeCanvas == null)
+        {
+            inGameMusic.UnPause();
+            audioMixer.SetFloat("sfxVolume", sfxVolume);
+            audioMixer.SetFloat("musicVolume", musicVolume);
+        }
+
+        isPaused = !isPaused;
+        if (activeMenu != null)
+        {
+            activeMenu.SetActive(false);
+        }
+
+        activeMenu = null;
+        activeCanvas = null;
+        previousCanvas = null;
+    }
+
+    public void OptionsMenu()
+    {
+        previousCanvas = activeCanvas;
+
+        optionsMenuCanvas.SetActive(true);
+        activeCanvas = optionsMenuCanvas;
+
+        if (previousCanvas != null)
+        {
+            previousCanvas.SetActive(false);
+        }
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        musicVolume = volume;
+        audioMixer.SetFloat("musicVolume", volume);
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        sfxVolume = volume;
+        audioMixer.SetFloat("sfxVolume", volume);
+    }
+
 }

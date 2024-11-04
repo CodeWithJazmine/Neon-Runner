@@ -186,16 +186,12 @@ public class EnemyGuard : MonoBehaviour
                     // If player is within the main field of view
                     if (angleToPlayer <= mainFOVAngle / 2.0f)
                     {
-                        //Debug.Log("Player in Main FOV");
-
                         StartDetecting(detectionTime - 2.0f);
                         playerVisible = true;
                     }
                     // If player is within peripheral view
                     else if (angleToPlayer <= peripheralFOVAngle / 2.0f)
                     {
-                        //Debug.Log("Player in Peripheral FOV");
-
                         StartDetecting(detectionTime);
                         playerVisible = true;
 
@@ -203,7 +199,6 @@ public class EnemyGuard : MonoBehaviour
                     // If player is behind the enemy (over the shoulder) and closer than the detection radius
                     else if (distanceToPlayer <= shoulderDetectionRadius)
                     {
-                        //Debug.Log("Player in Shoulder FOV");
                         StartDetecting(detectionTime / 2.0f);
                         playerVisible = true;
                     }
@@ -273,7 +268,6 @@ public class EnemyGuard : MonoBehaviour
 
     IEnumerator Detect(float detectionTime)
     {
-        //Debug.Log("Detecting player");
 
         while (playerVisibleTimer < detectionTime)
         {
@@ -290,7 +284,6 @@ public class EnemyGuard : MonoBehaviour
         }
         if (playerVisibleTimer >= detectionTime)
         {
-            //Debug.Log("Player detected");
             playerDetected = true;
             playerInSight = true;
             alertUIObject.SetActive(true);
@@ -302,7 +295,6 @@ public class EnemyGuard : MonoBehaviour
 
     IEnumerator StopDetect(float detectionTime)
     {
-        //Debug.Log("Stopping detection");
 
         while (playerVisibleTimer > 0)
         {
